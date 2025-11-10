@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculs des Flux</title>
+
+<script src="menu.js"></script>
+
+<style>
+  :root{
+    --bg:#0f1220; --card:#161a2e; --muted:#9aa3b2; --text:#e8ecf1;
+    --accent:#7cc4ff; --ring:0 0 0 3px rgba(124,196,255,.35);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+       color:var(--text);background:linear-gradient(180deg,#0d1020,#0b1022 60%,#0a0f1d)}
+  .wrapper{max-width:960px;margin:0 auto;display:grid;gap:18px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{font-size:clamp(20px,2.8vw,30px);margin:0;font-weight:700}
+  .subtitle{margin:0;color:var(--muted);font-size:clamp(12px,1.8vw,14px)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));
+        border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:18px;
+        box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03)}
+  .control{display:grid;gap:10px}
+  label{font-size:14px;color:var(--muted)}
+  select, input[type="number"], input[type="text"]{
+    width:100%;appearance:none;border-radius:12px;padding:12px 14px;font-size:16px;
+    color:var(--text);background:var(--card);border:1px solid rgba(255,255,255,.12);
+    outline:none;transition:.2s border-color,.2s box-shadow
+  }
+  select:focus, input:focus{box-shadow:var(--ring);border-color:#5fb7ff}
+  .result{display:grid;gap:12px}
+  .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .kv{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;
+      padding:12px;display:grid;gap:4px;text-align:center}
+  .k{font-size:12px;color:var(--muted);letter-spacing:.3px}
+  .v{font-size:18px;font-weight:700}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+        background:rgba(124,196,255,.12);border:1px solid rgba(124,196,255,.35);
+        color:#dff0ff;font-size:12px;width:max-content}
+  .note{font-size:12px;color:var(--muted)}
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .row{display:grid;gap:6px}
+  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .out{
+    font-size:26px;font-weight:800;letter-spacing:.3px;margin-top:6px;
+    padding:12px 14px;border-radius:14px;background:var(--card);
+    border:1px solid rgba(255,255,255,.12)
+  }
+  @media (max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:560px){
+    body{padding:16px}
+    .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .form-grid{grid-template-columns:1fr}
+    .v{font-size:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <div>
+      <h1>Calculs des Flux</h1>
+      <p class="subtitle">Choisissez une classe pour obtenir ses paramètres et calculer le flux lumineux à installer.</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="control">
+      <label for="classe">Sélectionner la classe</label>
+      <select id="classe">
+        <optgroup label="M">
+          <option>M1</option><option>M2</option><option>M3</option><option>M4</option><option>M5</option><option>M6</option>
+        </optgroup>
+        <optgroup label="C">
+          <option>C0</option><option>C1</option><option>C2</option><option>C3</option><option>C4</option><option>C5</option>
+        </optgroup>
+        <optgroup label="P">
+          <option>P1</option><option>P2</option><option>P3</option><option>P4</option><option>P5</option><option>P6</option><option>P7</option>
+        </optgroup>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="result">
+      <div id="badge" class="pill">Classe sélectionnée : <strong id="clsName"></strong></div>
+      <div id="fields" class="grid"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 style="margin:0 0 12px 0;font-size:18px">Flux lumineux à installer</h2>
+
+    <div class="form-grid">
+      <div class="row">
+        <label for="lmoy">Lmoy (cd/m²) = Uo</label>
+        <input id="lmoy" type="text" disabled />
+      </div>
+
+      <div class="row">
+        <label for="r">R – Revêtement</label>
+        <select id="r">
+          <option value="7">Enrobés clairs (7)</option>
+          <option value="10">Bétons (10)</option>
+          <option value="14" selected>Enrobés moyens (14)</option>
+          <option value="18">Enrobés sombres (18)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="l">l – Largeur (m)</label>
+        <input id="l" type="text" value="18" />
+      </div>
+
+      <div class="row">
+        <label for="e">e – Espacement (m)</label>
+        <input id="e" type="text" value="57,6" />
+      </div>
+
+      <div class="row">
+        <label for="mf">MF – Maintenance factor</label>
+        <input id="mf" type="text" value="0,85" />
+      </div>
+
+      <div class="row">
+        <label for="u">u – Taux d’utilisation selon tabelle fourni avec le luminaire</label>
+        <input id="u" type="text" value="0,325" />
+      </div>
+    </div>
+
+    <div class="inline" style="margin-top:12px">
+      <div class="note">Ft = Lmoy × R × l × e ÷ (MF × u)</div>
+    </div>
+
+    <div id="ft" class="out" aria-live="polite">Ft : 0 lm</div>
+  </section>
+</div>
+
+<script>
+const data={
+  M:{M1:{Uo:0.4},M2:{Uo:0.4},M3:{Uo:0.4},M4:{Uo:0.4},M5:{Uo:0.35},M6:{Uo:0.35}},
+  C:{C0:{Uo:0.4},C1:{Uo:0.4},C2:{Uo:0.4},C3:{Uo:0.4},C4:{Uo:0.4},C5:{Uo:0.4}},
+  P:{P1:{Uo:0.4},P2:{Uo:0.4},P3:{Uo:0.4},P4:{Uo:0.4},P5:{Uo:0.4},P6:{Uo:0.4},P7:{Uo:0.4}}
+};
+
+const $=q=>document.querySelector(q);
+const cls=$('#classe'),lmoy=$('#lmoy'),r=$('#r'),l=$('#l'),e=$('#e'),mf=$('#mf'),u=$('#u'),ft=$('#ft'),name=$('#clsName');
+
+function n(v){return parseFloat(String(v).replace(',','.'))}
+function f(x){return (isFinite(x)?(x.toFixed(2).replace('.',',')):'')}
+
+function calc(){
+ let L=n(lmoy.value),R=n(r.value),L1=n(l.value),E=n(e.value),MF=n(mf.value),U=n(u.value);
+ let Ft=(L*R*L1*E)/(MF*U);
+ ft.textContent='Ft : '+f(Ft)+' lm';
+}
+
+cls.onchange=()=>{
+ let c=cls.value;
+ let g=c[0];
+ let Uo=data[g]?.[c]?.Uo??0;
+ lmoy.value=String(Uo).replace('.',',');
+ name.textContent=c;
+ calc();
+}
+
+[r,l,e,mf,u].forEach(x=>x.oninput=calc);
+
+cls.onchange();
+</script>
+</body>
+</html>
