@@ -17,10 +17,12 @@ document.addEventListener("DOMContentLoaded", function () {
     menu.innerHTML = `
         <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
         <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
+        <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>        
     `
 
     document.body.appendChild(menu)
 
     document.body.style.paddingTop = "60px"
 })
+
 
