@@ -15,11 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
     menu.style.fontSize = "18px"
 
     menu.innerHTML = `
-        <a href="https://stephaneduperret.github.io/slg/index.html">Accueil</a>
-        <a href="https://stephaneduperret.github.io/slg/slg.html">Calcul</a>
+        <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
+        <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
     `
 
     document.body.appendChild(menu)
 
     document.body.style.paddingTop = "60px"
 })
+
