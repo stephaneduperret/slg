@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Classification d’éclairage – M, C et P</title>
+<style>
+  /* ========== Thème ========== */
+  :root{
+    --bg:#0a0f1f;        --panel:#10182b;     --panel-2:#0d1526;
+    --text:#eef2f7;      --muted:#9aa4b7;     --line:#1a2439;
+    --ok:#22c55e;        --warn:#ef5350;      --chip:#121a2a;
+    --ring:#2a3a5e;      --shadow:0 10px 28px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:14px}
+  header{padding:6px 2px 10px}
+  h1{font-size:1.15rem;margin:0 0 .25rem}
+  p.lead{margin:0;color:var(--muted);font-size:.9rem}
+
+  /* ========== Cartes & résumé ========== */
+  .calc{margin-top:18px}
+  .calc-title{font-size:1.02rem;margin:.2rem 0 .6rem}
+  .app{
+    display:grid; gap:12px;
+    grid-template-columns:1fr;           /* mobile-first */
+    align-items:start;
+  }
+  /* Desktop : 2 colonnes */
+  @media (min-width:960px){
+    .app{grid-template-columns:1fr 320px}
+  }
+  .card,.sum-box{
+    background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.06));
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+  .card{padding:10px}
+  .group{margin:10px 0 14px}
+  .group h3{font-size:.98rem;margin:2px 0 8px;color:#e8ecf4}
+
+  /* ========== Options (pills) ========== */
+  /* Par défaut, grille fluide qui se recompose selon la largeur */
+  .options{
+    display:grid; gap:8px;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  }
+  /* Très petits écrans */
+  @media (max-width:420px){
+    .options{grid-template-columns:1fr}
+  }
+  .opt{
+    display:grid; grid-template-columns:auto 1fr; align-items:center; gap:10px;
+    border:1px solid var(--line); background:var(--panel);
+    border-radius:999px; padding:10px 12px; cursor:pointer; min-height:44px;
+    transition:outline-color .2s, background .2s, border-color .2s, transform .05s;
+  }
+  .opt:active{transform:scale(.996)}
+  .opt input{width:18px;height:18px;margin:0; accent-color:#6282ff}
+  .title{font-weight:650;font-size:.95rem;line-height:1.15}
+  .desc{font-size:.8rem;color:var(--muted);line-height:1.1}
+  .opt[data-selected="true"]{
+    outline:2px solid var(--ring);
+    background:linear-gradient(180deg,#0f1a33,#0e1730);
+  }
+
+  /* ========== Résumé ========== */
+  .summary{position:static}
+  .sum-box{padding:10px 12px}
+  .sum-row{display:flex;justify-content:space-between;gap:8px;margin:6px 0}
+  .sum-row .k{color:var(--muted);font-size:.88rem}
+  .sum-row .v{font-weight:750;font-size:1rem}
+  .total{margin-top:8px;border-top:1px dashed var(--line);padding-top:10px}
+  .classX{font-size:1.6rem;font-weight:850;margin:4px 0 6px}
+  .ok{color:var(--ok)} .cWarn{color:var(--warn)}
+  .hint{color:var(--muted);font-size:.85rem}
+
+  /* Sur desktop, on fixe le résumé */
+  @media (min-width:960px){
+    .summary{position:sticky; top:14px}
+  }
+
+  /* ========== Pied de section & boutons ========== */
+  .foot{color:var(--muted);font-size:.85rem;margin-top:8px;
+        display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .btn{
+    border:1px solid var(--line);background:#0a1122;color:#e8edf6;
+    border-radius:12px;padding:9px 12px;cursor:pointer;font-size:.95rem
+  }
+  .btn:hover{border-color:#31405f}
+
+  .note{font-size:.82rem;color:var(--muted);margin-top:6px}
+  hr.sep{border:0;border-top:1px dashed #1b2744;margin:14px 0}
+
+  /* ========== Variante : groupe C sur 2 lignes ========== */
+  .group[data-c-two] .options{grid-template-columns:repeat(2,minmax(220px,1fr))}
+  @media (max-width:700px){.group[data-c-two] .options{grid-template-columns:1fr 1fr}}
+  @media (max-width:460px){.group[data-c-two] .options{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Classification d’éclairage – M, C &amp; P</h1>
+    <p class="lead">Sélectionne une option par ligne. Calcul : Classe = ⌈6 − ΣVw⌉ (bornée 1–6).</p>
+  </header>
+
+  <!-- ==================== M ==================== -->
+  <section class="calc" id="calcM">
+    <div class="calc-title">Classe M (chaussées – trafic motorisé)</div>
+    <div class="app" data-kind="M">
+      <section class="card form">
+        <!-- Vitesse -->
+        <div class="group" data-group>
+          <h3>Vitesse</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_vit" value="3"><div><div class="title">Très élevée</div><div class="desc">v &gt; 100 km/h — Vw = 3</div></div></label>
+            <label class="opt"><input type="radio" name="M_vit" value="2"><div><div class="title">Élevée</div><div class="desc">70–100 km/h — Vw = 2</div></div></label>
+            <label class="opt"><input type="radio" name="M_vit" value="1"><div><div class="title">Modérée</div><div class="desc">40–&lt;70 km/h — Vw = 1</div></div></label>
+            <label class="opt" data-classc="true"><input type="radio" name="M_vit" value="0"><div><div class="title">Faible</div><div class="desc">v &lt; 40 km/h — zone de conflit (C)</div></div></label>
+          </div>
+        </div>
+
+        <!-- TMJ -->
+        <div class="group" data-group>
+          <h3>Volume de trafic (TMJ planifié)</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_tmj" value="1"><div><div class="title">≥ 25 000</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="M_tmj" value="0.5"><div><div class="title">15 000–25 000</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="M_tmj" value="0"><div><div class="title">7 000–15 000</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="M_tmj" value="-0.5"><div><div class="title">&lt; 7 000</div><div class="desc">Vw = −0,5</div></div></label>
+          </div>
+        </div>
+
+        <!-- Heure -->
+        <div class="group" data-group>
+          <h3>Volume de trafic (max. réel à l’heure)</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_hr" value="1"><div><div class="title">RGD / RP &gt; 2 voies</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="M_hr" value="0"><div><div class="title">Modéré &gt; 65 %</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="M_hr" value="-1"><div><div class="title">Modéré 15–45 %</div><div class="desc">Vw = −1</div></div></label>
+            <label class="opt"><input type="radio" name="M_hr" value="-2"><div><div class="title">Faible &lt; 15 %</div><div class="desc">Vw = −2</div></div></label>
+          </div>
+        </div>
+
+        <!-- Composition -->
+        <div class="group" data-group>
+          <h3>Composition du trafic</h3>
+          <div class="options">
+            <label class="opt" data-classc="true"><input type="radio" name="M_comp" value="0"><div><div class="title">Mixte, forte part non motorisée</div><div class="desc">→ plutôt Classe C</div></div></label>
+            <label class="opt"><input type="radio" name="M_comp" value="1"><div><div class="title">Mixte</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="M_comp" value="0"><div><div class="title">Motorisé uniquement</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Séparation -->
+        <div class="group" data-group>
+          <h3>Séparation des chaussées</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_sep" value="0"><div><div class="title">Non</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="M_sep" value="-0.5"><div><div class="title">Oui</div><div class="desc">Vw = −0,5</div></div></label>
+          </div>
+        </div>
+
+        <!-- Carrefours -->
+        <div class="group" data-group>
+          <h3>Densité des carrefours</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_cross" value="1"><div><div class="title">Nombreux / complexes</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="M_cross" value="0.5"><div><div class="title">Élevée &gt; 3/km</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="M_cross" value="0"><div><div class="title">Modérée ≤ 3/km</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Stationnement -->
+        <div class="group" data-group>
+          <h3>Véhicules en stationnement</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_park" value="0.5"><div><div class="title">Oui</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="M_park" value="0"><div><div class="title">Non</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Luminosité -->
+        <div class="group" data-group>
+          <h3>Luminosité ambiante</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_amb" value="1"><div><div class="title">Élevée</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="M_amb" value="0"><div><div class="title">Modérée</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="M_amb" value="-1"><div><div class="title">Faible</div><div class="desc">Vw = −1</div></div></label>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="group" data-group>
+          <h3>Tâche de navigation</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="M_nav" value="0.5"><div><div class="title">Difficile</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="M_nav" value="0"><div><div class="title">Normale</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <div class="foot">
+          <span>Interface compacte et responsive</span>
+          <button class="btn" data-reset>M – Réinitialiser</button>
+        </div>
+      </section>
+
+      <aside class="summary">
+        <div class="sum-box">
+          <div class="sum-row"><span class="k">Somme des valeurs Vw</span><span class="v" data-sum>0,0</span></div>
+          <div class="sum-row"><span class="k">Calcul (6 − ΣVw)</span><span class="v" data-raw>6,0</span></div>
+          <div class="total">
+            <div>Classe proposée</div>
+            <div class="classX ok" data-class>M6</div>
+            <div class="hint" data-hint>Arrondi sup. de (6 − ΣVw).</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <!-- ==================== C ==================== -->
+  <section class="calc" id="calcC">
+    <div class="calc-title">Classe C (zones de conflit)</div>
+    <div class="app" data-kind="C">
+      <section class="card form">
+        <!-- Vitesse -->
+        <div class="group" data-group>
+          <h3>Vitesse</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_vit" value="0"><div><div class="title">Très élevée</div><div class="desc">classe M (information)</div></div></label>
+            <label class="opt"><input type="radio" name="C_vit" value="0"><div><div class="title">Élevée</div><div class="desc">classe M (information)</div></div></label>
+            <label class="opt"><input type="radio" name="C_vit" value="1"><div><div class="title">Modérée</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="C_vit" value="0"><div><div class="title">Faible</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- TMJ -->
+        <div class="group" data-group>
+          <h3>Volume de trafic (TMJ planifié)</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_tmj" value="1"><div><div class="title">≥ 25 000</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="C_tmj" value="0.5"><div><div class="title">15 000–25 000</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="C_tmj" value="0"><div><div class="title">7 000–15 000</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="C_tmj" value="-0.5"><div><div class="title">&lt; 7 000</div><div class="desc">Vw = −0,5</div></div></label>
+          </div>
+        </div>
+
+        <!-- Volume heure -->
+        <div class="group" data-group>
+          <h3>Volume de trafic (max. réel à l’heure)</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_hr" value="0"><div><div class="title">Élevé &gt; 45 %</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="C_hr" value="-1"><div><div class="title">Modéré 15–45 %</div><div class="desc">Vw = −1</div></div></label>
+            <label class="opt"><input type="radio" name="C_hr" value="-2"><div><div class="title">Faible &lt; 15 %</div><div class="desc">Vw = −2</div></div></label>
+          </div>
+        </div>
+
+        <!-- Composition -->
+        <div class="group" data-group data-c-two>
+          <h3>Composition du trafic</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_comp" value="2"><div><div class="title">Mixte, forte part non motorisée</div><div class="desc">Vw = 2</div></div></label>
+            <label class="opt"><input type="radio" name="C_comp" value="1"><div><div class="title">Mixte</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="C_comp" value="0"><div><div class="title">Motorisé uniquement</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Séparation -->
+        <div class="group" data-group>
+          <h3>Séparation des chaussées</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_sep" value="0"><div><div class="title">Non</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="C_sep" value="-0.5"><div><div class="title">Oui</div><div class="desc">Vw = −0,5</div></div></label>
+          </div>
+        </div>
+
+        <!-- Carrefours -->
+        <div class="group" data-group>
+          <h3>Densité des carrefours</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_cross" value="0.5"><div><div class="title">Élevée &gt; 3/km</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="C_cross" value="0"><div><div class="title">Modérée ≤ 3/km</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Stationnement -->
+        <div class="group" data-group>
+          <h3>Véhicules en stationnement</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_park" value="0.5"><div><div class="title">Oui</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="C_park" value="0"><div><div class="title">Non</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Luminosité -->
+        <div class="group" data-group>
+          <h3>Luminosité ambiante</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_amb" value="1"><div><div class="title">Élevée</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="C_amb" value="0"><div><div class="title">Modérée</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="C_amb" value="-1"><div><div class="title">Faible</div><div class="desc">Vw = −1</div></div></label>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="group" data-group>
+          <h3>Tâche de navigation</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="C_nav" value="0.5"><div><div class="title">Difficile</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="C_nav" value="0"><div><div class="title">Normale</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <div class="foot">
+          <span>Basé sur le tableau “C”</span>
+          <button class="btn" data-reset>C – Réinitialiser</button>
+        </div>
+      </section>
+
+      <aside class="summary">
+        <div class="sum-box">
+          <div class="sum-row"><span class="k">Somme des valeurs Vw</span><span class="v" data-sum>0,0</span></div>
+          <div class="sum-row"><span class="k">Calcul (6 − ΣVw)</span><span class="v" data-raw>6,0</span></div>
+          <div class="total">
+            <div>Classe proposée</div>
+            <div class="classX ok" data-class>C6</div>
+            <div class="hint" data-hint>Arrondi sup. de (6 − ΣVw).</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <!-- ==================== P ==================== -->
+  <section class="calc" id="calcP">
+    <div class="calc-title">Classe P (zones piétonnes / faibles vitesses)</div>
+    <div class="app" data-kind="P">
+      <section class="card form">
+        <!-- Vitesse -->
+        <div class="group" data-group>
+          <h3>Vitesse</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="P_vit" value="1"><div><div class="title">Faible</div><div class="desc">v ≤ 40 km/h — Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="P_vit" value="0"><div><div class="title">Très faible</div><div class="desc">Vitesse de marche — Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Fréquence d'utilisation -->
+        <div class="group" data-group>
+          <h3>Fréquence d’utilisation</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="P_freq" value="1"><div><div class="title">Animée</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="P_freq" value="0"><div><div class="title">Normale</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="P_freq" value="-1"><div><div class="title">Calme</div><div class="desc">Vw = −1</div></div></label>
+          </div>
+        </div>
+
+        <!-- Composition (sur 2 lignes, corrigée pour P) -->
+        <div class="group" data-group data-c-two>
+          <h3>Composition du trafic</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="P_comp" value="2">
+              <div><div class="title">Mixte, forte part non motorisée</div><div class="desc">Vw = 2</div></div>
+            </label>
+            <label class="opt"><input type="radio" name="P_comp" value="1">
+              <div><div class="title">Mixte</div><div class="desc">Vw = 1</div></div>
+            </label>
+            <label class="opt"><input type="radio" name="P_comp" value="0">
+              <div><div class="title">Motorisé uniquement</div><div class="desc">Vw = 0</div></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Stationnement -->
+        <div class="group" data-group>
+          <h3>Véhicules en stationnement</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="P_park" value="0.5"><div><div class="title">Oui</div><div class="desc">Vw = 0,5</div></div></label>
+            <label class="opt"><input type="radio" name="P_park" value="0"><div><div class="title">Non</div><div class="desc">Vw = 0</div></div></label>
+          </div>
+        </div>
+
+        <!-- Luminosité -->
+        <div class="group" data-group>
+          <h3>Luminosité ambiante</h3>
+          <div class="options">
+            <label class="opt"><input type="radio" name="P_amb" value="1"><div><div class="title">Élevée</div><div class="desc">Vw = 1</div></div></label>
+            <label class="opt"><input type="radio" name="P_amb" value="0"><div><div class="title">Modérée</div><div class="desc">Vw = 0</div></div></label>
+            <label class="opt"><input type="radio" name="P_amb" value="-1"><div><div class="title">Faible</div><div class="desc">Vw = −1</div></div></label>
+          </div>
+        </div>
+
+        <!-- Reconnaissance faciale (info) -->
+        <div class="group">
+          <h3>Reconnaissance faciale</h3>
+          <div class="options">
+            <span class="opt" style="cursor:default"><input type="checkbox" disabled>
+              <div><div class="title">Nécessaire</div><div class="desc">Info : pas de Vw défini dans le tableau (voir remarque)</div></div>
+            </span>
+            <span class="opt" style="cursor:default"><input type="checkbox" disabled>
+              <div><div class="title">Pas nécessaire</div><div class="desc">Vw = 0 (par défaut)</div></div>
+            </span>
+          </div>
+          <div class="note">Remarque : si l’exigence « visage reconnaissable » s’applique, adapter la classe finale selon le cahier des charges.</div>
+        </div>
+
+        <div class="foot">
+          <span>Basé sur le tableau “P”</span>
+          <button class="btn" data-reset>P – Réinitialiser</button>
+        </div>
+      </section>
+
+      <aside class="summary">
+        <div class="sum-box">
+          <div class="sum-row"><span class="k">Somme des valeurs Vw</span><span class="v" data-sum>0,0</span></div>
+          <div class="sum-row"><span class="k">Calcul (6 − ΣVw)</span><span class="v" data-raw>6,0</span></div>
+          <div class="total">
+            <div>Classe proposée</div>
+            <div class="classX ok" data-class>P6</div>
+            <div class="hint" data-hint>Arrondi sup. de (6 − ΣVw).</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const nf = new Intl.NumberFormat('fr-CH',{minimumFractionDigits:1,maximumFractionDigits:1});
+
+  function updateCalc(root){
+    const sumEl = root.querySelector('[data-sum]');
+    const rawEl = root.querySelector('[data-raw]');
+    const classEl = root.querySelector('[data-class]');
+    const hintEl = root.querySelector('[data-hint]');
+    const kind = root.dataset.kind; // "M" | "C" | "P"
+
+    let sum = 0, forceC = false;
+
+    root.querySelectorAll('[data-group]').forEach(g=>{
+      const r = g.querySelector('input[type=radio]:checked');
+      if(r){
+        const lab = r.closest('label.opt');
+        const v = parseFloat(r.value||'0');
+        sum += v;
+        if(lab && lab.dataset.classc === 'true') forceC = true;
+      }
+    });
+
+    // style sélection
+    root.querySelectorAll('label.opt').forEach(o=>{
+      o.dataset.selected = o.querySelector('input')?.checked ? 'true' : 'false';
+    });
+
+    sumEl.textContent = nf.format(sum);
+    const mRaw = 6 - sum;
+    rawEl.textContent = nf.format(mRaw);
+
+    if(kind === 'M' && forceC){
+      classEl.textContent = 'Classe C';
+      classEl.className = 'classX cWarn';
+      hintEl.textContent = 'Zone de conflit détectée → basculer vers Classe C.';
+      return;
+    }
+
+    let n = Math.ceil(mRaw);
+    if(n < 1) n = 1;
+    if(n > 6) n = 6;
+
+    classEl.className = 'classX ok';
+    classEl.textContent = (kind + n);
+    hintEl.textContent = 'Arrondi sup. de (6 − ΣVw).';
+  }
+
+  // Initialisation
+  document.querySelectorAll('.app').forEach(app=>{
+    const refresh = ()=>updateCalc(app);
+    app.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',refresh));
+    const btn = app.parentElement.querySelector('[data-reset]');
+    if(btn){
+      btn.addEventListener('click', ()=>{
+        app.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+        refresh();
+        window.scrollTo({top:app.getBoundingClientRect().top + window.scrollY - 12,behavior:'smooth'});
+      });
+    }
+    refresh();
+  });
+})();
+</script>
+</body>
+</html>
