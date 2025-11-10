@@ -19,42 +19,40 @@
   .wrapper{max-width:960px;margin:0 auto;display:grid;gap:18px}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   h1{font-size:clamp(20px,2.8vw,30px);margin:0;font-weight:700}
+  h2{margin:0 0 12px 0;font-size:18px}
   .subtitle{margin:0;color:var(--muted);font-size:clamp(12px,1.8vw,14px)}
   .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));
         border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:18px;
         box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03)}
-  .control{display:grid;gap:10px}
   label{font-size:14px;color:var(--muted)}
-  select, input[type="number"], input[type="text"]{
+  select, input[type="text"]{
     width:100%;appearance:none;border-radius:12px;padding:12px 14px;font-size:16px;
     color:var(--text);background:var(--card);border:1px solid rgba(255,255,255,.12);
     outline:none;transition:.2s border-color,.2s box-shadow
   }
   select:focus, input:focus{box-shadow:var(--ring);border-color:#5fb7ff}
-  .result{display:grid;gap:12px}
-  .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-  .kv{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;
-      padding:12px;display:grid;gap:4px;text-align:center}
-  .k{font-size:12px;color:var(--muted);letter-spacing:.3px}
-  .v{font-size:18px;font-weight:700}
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .note{font-size:12px;color:var(--muted)}
   .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
         background:rgba(124,196,255,.12);border:1px solid rgba(124,196,255,.35);
         color:#dff0ff;font-size:12px;width:max-content}
-  .note{font-size:12px;color:var(--muted)}
-  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-  .row{display:grid;gap:6px}
-  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .kv{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;
+      padding:12px;text-align:center}
+  .k{font-size:12px;color:var(--muted)}
+  .v{font-size:18px;font-weight:700}
   .out{
     font-size:26px;font-weight:800;letter-spacing:.3px;margin-top:6px;
     padding:12px 14px;border-radius:14px;background:var(--card);
     border:1px solid rgba(255,255,255,.12)
   }
+  .result{display:grid;gap:12px}
   @media (max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
   @media (max-width:560px){
     body{padding:16px}
     .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .form-grid{grid-template-columns:1fr}
-    .v{font-size:16px}
   }
 </style>
 </head>
@@ -63,44 +61,45 @@
   <header>
     <div>
       <h1>Calculs des Flux</h1>
-      <p class="subtitle">Choisissez une classe pour obtenir ses paramètres et calculer le flux lumineux à installer.</p>
+      <p class="subtitle">Choisissez une classe, renseignez les paramètres, puis le flux à installer est réutilisé pour tous les calculs.</p>
     </div>
   </header>
 
+  <!-- Choix de la classe -->
   <section class="card">
-    <div class="control">
-      <label for="classe">Sélectionner la classe</label>
-      <select id="classe">
-        <optgroup label="M">
-          <option>M1</option><option>M2</option><option>M3</option><option>M4</option><option>M5</option><option>M6</option>
-        </optgroup>
-        <optgroup label="C">
-          <option>C0</option><option>C1</option><option>C2</option><option>C3</option><option>C4</option><option>C5</option>
-        </optgroup>
-        <optgroup label="P">
-          <option>P1</option><option>P2</option><option>P3</option><option>P4</option><option>P5</option><option>P6</option><option>P7</option>
-        </optgroup>
-      </select>
-    </div>
+    <label for="classe">Sélectionner la classe</label>
+    <select id="classe">
+      <optgroup label="M">
+        <option>M1</option><option>M2</option><option>M3</option><option>M4</option><option>M5</option><option>M6</option>
+      </optgroup>
+      <optgroup label="C">
+        <option>C0</option><option>C1</option><option>C2</option><option>C3</option><option>C4</option><option>C5</option>
+      </optgroup>
+      <optgroup label="P">
+        <option>P1</option><option>P2</option><option>P3</option><option>P4</option><option>P5</option><option>P6</option><option>P7</option>
+      </optgroup>
+    </select>
   </section>
 
+  <!-- Récap paramètres de la classe -->
   <section class="card">
     <div class="result">
-      <div id="badge" class="pill">Classe sélectionnée : <strong id="clsName"></strong></div>
+      <div class="pill">Classe sélectionnée : <strong id="clsName"></strong></div>
       <div id="fields" class="grid"></div>
     </div>
   </section>
 
+  <!-- FT (flux à installer) -->
   <section class="card">
-    <h2 style="margin:0 0 12px 0;font-size:18px">Flux lumineux à installer</h2>
+    <h2>Flux lumineux à installer (Ft)</h2>
 
     <div class="form-grid">
-      <div class="row">
+      <div>
         <label for="lmoy">Lmoy (cd/m²) = Uo</label>
         <input id="lmoy" type="text" disabled />
       </div>
 
-      <div class="row">
+      <div>
         <label for="r">R – Revêtement</label>
         <select id="r">
           <option value="7">Enrobés clairs (7)</option>
@@ -110,23 +109,23 @@
         </select>
       </div>
 
-      <div class="row">
-        <label for="l">l – Largeur (m)</label>
+      <div>
+        <label for="l">l – Largeur chaussée (m)</label>
         <input id="l" type="text" value="18" />
       </div>
 
-      <div class="row">
-        <label for="e">e – Espacement (m)</label>
+      <div>
+        <label for="e">e – Espacement chaussée (m)</label>
         <input id="e" type="text" value="57,6" />
       </div>
 
-      <div class="row">
+      <div>
         <label for="mf">MF – Maintenance factor</label>
         <input id="mf" type="text" value="0,85" />
       </div>
 
-      <div class="row">
-        <label for="u">u – Taux d’utilisation selon tabelle fourni avec le luminaire</label>
+      <div>
+        <label for="u">u – Taux d’utilisation (table constructeur)</label>
         <input id="u" type="text" value="0,325" />
       </div>
     </div>
@@ -137,39 +136,101 @@
 
     <div id="ft" class="out" aria-live="polite">Ft : 0 lm</div>
   </section>
+
+  <!-- Indications supplémentaires -->
+  <section class="card">
+    <h2>Indications supplémentaires</h2>
+
+    <div id="li" class="out">Li (mise en service) : 0 cd/m²</div>
+    <div id="eServ" class="out">E (service) : 0 lux</div>
+    <div id="lm" class="out">Lm (à maintenir) : 0 cd/m²</div>
+    <div id="eMaint" class="out">E (à maintenir) : 0 lux</div>
+
+    <!-- Trottoir d’en face : l_face & e_face modifiables -->
+    <div class="form-grid" style="margin-top:12px">
+      <div>
+        <label for="lFace">l (trottoir d’en face) – largeur (m)</label>
+        <input id="lFace" type="text" value="1,5" />
+      </div>
+      <div>
+        <label for="eFace">e (trottoir d’en face) – espacement (m)</label>
+        <input id="eFace" type="text" value="28" />
+      </div>
+    </div>
+
+    <div id="lmFace" class="out">Lm (trottoir d’en face) : 0 cd/m²</div>
+
+    <div class="inline" style="margin-top:12px">
+      <div class="note">
+        Formules : Li = (Ft × u)/(R × l × e) · E(service) = Li × R ·
+        Lm = (Ft × u × MF)/(R × l × e) · E(maintien) = Lm × R ·
+        Lm<sub>face</sub> = (Ft × u × MF)/(l_face × e_face)
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>
+/* Données classes */
 const data={
   M:{M1:{Uo:0.4},M2:{Uo:0.4},M3:{Uo:0.4},M4:{Uo:0.4},M5:{Uo:0.35},M6:{Uo:0.35}},
   C:{C0:{Uo:0.4},C1:{Uo:0.4},C2:{Uo:0.4},C3:{Uo:0.4},C4:{Uo:0.4},C5:{Uo:0.4}},
   P:{P1:{Uo:0.4},P2:{Uo:0.4},P3:{Uo:0.4},P4:{Uo:0.4},P5:{Uo:0.4},P6:{Uo:0.4},P7:{Uo:0.4}}
 };
 
+/* Helpers */
 const $=q=>document.querySelector(q);
-const cls=$('#classe'),lmoy=$('#lmoy'),r=$('#r'),l=$('#l'),e=$('#e'),mf=$('#mf'),u=$('#u'),ft=$('#ft'),name=$('#clsName');
+const cls=$('#classe'), lmoy=$('#lmoy'), r=$('#r'), l=$('#l'), e=$('#e'), mf=$('#mf'), u=$('#u');
+const lFace=$('#lFace'), eFace=$('#eFace');
+const ftOut=$('#ft'), clsName=$('#clsName');
+const li=$('#li'), eServ=$('#eServ'), lm=$('#lm'), eMaint=$('#eMaint'), lmFace=$('#lmFace');
 
 function n(v){return parseFloat(String(v).replace(',','.'))}
-function f(x){return (isFinite(x)?(x.toFixed(2).replace('.',',')):'')}
+function s(x,dec=5){return isFinite(x)?x.toFixed(dec).replace('.',','):''}
 
-function calc(){
- let L=n(lmoy.value),R=n(r.value),L1=n(l.value),E=n(e.value),MF=n(mf.value),U=n(u.value);
- let Ft=(L*R*L1*E)/(MF*U);
- ft.textContent='Ft : '+f(Ft)+' lm';
+/* Calcul Ft */
+function calcFt(){
+  const Lmoy=n(lmoy.value), R=n(r.value), L=n(l.value), E=n(e.value), MF=n(mf.value), U=n(u.value);
+  return (Lmoy*R*L*E)/(MF*U);
 }
 
+/* Calculs supplémentaires */
+function calcExtras(Ft){
+  const R=n(r.value), L=n(l.value), E=n(e.value), MF=n(mf.value), U=n(u.value);
+  const Lf=n(lFace.value), Ef=n(eFace.value);
+
+  const Li=(Ft*U)/(R*L*E);
+  const Eservice=Li*R;
+  const Lm_val=(Ft*U*MF)/(R*L*E);
+  const Emaint_val=Lm_val*R;
+  const LmFace_val=(Ft*U*MF)/(Lf*Ef); // l_face & e_face indépendants
+
+  li.textContent     ='Li (mise en service) : '+s(Li,6)+' cd/m²';
+  eServ.textContent  ='E (service) : '+s(Eservice,5)+' lux';
+  lm.textContent     ='Lm (à maintenir) : '+s(Lm_val,6)+' cd/m²';
+  eMaint.textContent ='E (à maintenir) : '+s(Emaint_val,5)+' lux';
+  lmFace.textContent ='Lm (trottoir d’en face) : '+s(LmFace_val,6)+' cd/m²';
+}
+
+function recalcAll(){
+  const Ft=calcFt();
+  ftOut.textContent='Ft : '+s(Ft,2)+' lm';
+  calcExtras(Ft);
+}
+
+/* UI */
 cls.onchange=()=>{
- let c=cls.value;
- let g=c[0];
- let Uo=data[g]?.[c]?.Uo??0;
- lmoy.value=String(Uo).replace('.',',');
- name.textContent=c;
- calc();
-}
+  const c=cls.value, g=c[0];
+  const Uo=data[g]?.[c]?.Uo ?? 0;
+  lmoy.value=String(Uo).replace('.',',');
+  clsName.textContent=c;
+  recalcAll();
+};
 
-[r,l,e,mf,u].forEach(x=>x.oninput=calc);
+[r,l,e,mf,u,lFace,eFace].forEach(el=>el.addEventListener('input',recalcAll));
 
-cls.onchange();
+/* init */
+cls.dispatchEvent(new Event('change'));
 </script>
 </body>
 </html>
