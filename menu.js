@@ -4,58 +4,126 @@ document.addEventListener("DOMContentLoaded", function () {
   const menu = document.createElement("div")
   menu.innerHTML = `
     <nav class="top-menu">
-      <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
-      <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
-      <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>
+      <div class="menu-logo">⚡ SLG Calculs</div>
+      <button class="menu-toggle" aria-label="Menu">&#9776;</button>
+      <div class="menu-links">
+        <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
+        <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
+        <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>
+      </div>
     </nav>
   `
   document.body.prepend(menu)
 
   const style = document.createElement("style")
   style.textContent = `
+    /* --- STYLE GLOBAL --- */
     .top-menu {
       width: 100%;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 30px;
-      padding: 14px 20px;
+      padding: 14px 30px;
       position: fixed;
       top: 0;
       left: 0;
       z-index: 9999;
-      background: rgba(20, 25, 40, 0.8);
-      backdrop-filter: blur(10px);
+      background: rgba(17, 25, 40, 0.85);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       font-family: "Inter", system-ui, sans-serif;
-      font-size: 17px;
-      transition: all 0.3s ease;
-    }
-
-    .top-menu a {
       color: #e8ecf1;
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .menu-logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #7cc4ff;
+      text-shadow: 0 0 10px rgba(124, 196, 255, 0.3);
+    }
+
+    .menu-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
       transition: all 0.3s ease;
     }
 
-    .top-menu a:hover {
-      background: rgba(124, 196, 255, 0.2);
+    .menu-links a {
+      text-decoration: none;
+      color: #e8ecf1;
+      font-size: 17px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      padding: 6px 12px;
+    }
+
+    .menu-links a:hover {
       color: #7cc4ff;
+      background: rgba(124, 196, 255, 0.15);
       transform: translateY(-2px);
     }
 
-    @media (max-width: 600px) {
-      .top-menu {
+    /* --- BOUTON BURGER --- */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #e8ecf1;
+      font-size: 26px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .menu-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    /* --- VERSION MOBILE --- */
+    @media (max-width: 720px) {
+      .menu-links {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
         flex-direction: column;
-        gap: 10px;
-        padding: 12px;
-        font-size: 15px;
+        background: rgba(15, 20, 35, 0.95);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+      }
+
+      .menu-links.show {
+        max-height: 300px;
+        opacity: 1;
+        padding: 16px 0;
+      }
+
+      .menu-links a {
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 18px;
+      }
+
+      .menu-toggle {
+        display: block;
       }
     }
   `
   document.head.appendChild(style)
 
+  // Padding du corps pour éviter le chevauchement
   document.body.style.paddingTop = "70px"
+
+  // Fonction du bouton burger
+  const toggle = menu.querySelector(".menu-toggle")
+  const links = menu.querySelector(".menu-links")
+  toggle.addEventListener("click", () => {
+    links.classList.toggle("show")
+  })
 })
