@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calcul des lux dans un tunnel – Schéma interactif</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22d3ee;
+    --z-acces:#fff176;       /* jaune clair */
+    --z-entree:#ffe066;      /* jaune */
+    --z-transition:#ffad61;  /* orange clair */
+    --z-centrale:#ff7043;    /* orange soutenu */
+    --z-sortie:#ff8a65;      /* orange vif */
+    --z-air:#ffcc80;         /* orange clair (air libre) */
+    --road:#374151; --lane:#9ca3af; --grid:#1f2937;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:24px; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+    color:var(--ink); background:linear-gradient(180deg,#0b1022,#0a0f20);
+  }
+  h1{margin:0 0 12px;font-size:clamp(1.2rem,2.5vw,1.8rem);letter-spacing:.2px}
+  p.note{color:var(--muted); margin:.25rem 0 .75rem}
+  .app{display:grid; grid-template-columns: 380px 1fr; gap:22px}
+  @media (max-width: 980px){ .app{grid-template-columns: 1fr; } }
+  .panel{
+    background:var(--card); border:1px solid #1f2937; border-radius:16px; padding:16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .row{display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap:8px; margin-bottom:10px}
+  .row label{font-size:.92rem; color:var(--muted)}
+  .row input, .row select{
+    width:100%; padding:10px 12px; border-radius:12px; border:1px solid #273244;
+    background:#0b1220; color:var(--ink);
+  }
+  .grid-2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+  .result{
+    display:grid; grid-template-columns: 1.2fr .8fr; gap:8px; margin-top:12px;
+    padding:12px; border-radius:12px; background:#0b1220; border:1px solid #1f2a3a;
+  }
+  .result div{display:flex; align-items:center; justify-content:space-between}
+  .result .v{font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--accent)}
+  .legend{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+  .tag{display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #1f2937; font-size:.9rem}
+  .dot{width:14px;height:14px;border-radius:3px}
+  .svgwrap{position:relative; width:100%; min-height:320px; background:#0b1220; border:1px solid #1f2a3a; border-radius:16px; overflow:hidden}
+  .hint{font-size:.86rem; color:var(--muted); margin-top:8px}
+  .btn{appearance:none;border:1px solid #1f2a3a;background:#0b1220;color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer}
+  .btn:hover{border-color:#2b3950}
+  small.units{color:var(--muted)}
+</style>
+</head>
+<body>
+  <h1>Calcul des lux dans un tunnel – avec schéma des zones</h1>
+  <p class="note">Renseigne les paramètres de planification : le schéma et les valeurs se recalculent automatiquement.</p>
+
+  <div class="app">
+    <!-- Panneau de saisie -->
+    <section class="panel">
+      <div class="row">
+        <label for="speed">Vitesse (km/h)</label>
+        <select id="speed">
+          <option value="50">50</option>
+          <option value="60" selected>60</option>
+          <option value="70">70</option>
+          <option value="80">80</option>
+          <option value="90">90</option>
+          <option value="100">100</option>
+        </select>
+        <div>
+          <label for="sa">Distance d'arrêt SA (m)</label>
+          <input id="sa" type="number" step="1" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="L20">L20 – luminance de la zone d’accès (cd/m²)</label>
+        <input id="L20" type="number" step="0.1" placeholder="ex. 3000" />
+        <div>
+          <label for="kpermille">k (‰) – selon classe/système</label>
+          <input id="kpermille" type="number" step="0.1" placeholder="ex. 25" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="q0">q<sub>0</sub> – coeff. moyen de réflexion de voie</label>
+        <input id="q0" type="number" step="0.005" value="0.07" />
+        <div>
+          <label for="LfC">Luminance zone centrale Lf (cd/m²)</label>
+          <input id="LfC" type="number" step="0.1" placeholder="ex. 3.0" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="lenTotal">Longueur totale du tunnel (m)</label>
+        <input id="lenTotal" type="number" step="1" value="600" />
+        <div>
+          <label for="ratioTrans">Transition (multiple de SA)</label>
+          <input id="ratioTrans" type="number" step="0.1" value="1.0" />
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:6px">
+        <button class="btn" id="presetDay">Preset «jour» (ex. k=25‰, LfC=3)</button>
+        <button class="btn" id="presetNight">Preset «nuit» (pas d’adaptation)</button>
+      </div>
+
+      <div class="result">
+        <div><span>Lfe (entrée) [cd/m²]</span><span class="v" id="vLfe">–</span></div>
+        <div><span>E<sub>entrée</sub> (lux) ≈ Lfe / q<sub>0</sub></span><span class="v" id="vEentree">–</span></div>
+        <div><span>L<sub>centrale</sub> [cd/m²]</span><span class="v" id="vLfC">–</span></div>
+        <div><span>E<sub>centrale</sub> (lux) ≈ L<sub>c</sub> / q<sub>0</sub></span><span class="v" id="vEc">–</span></div>
+      </div>
+
+      <p class="hint">Rappels rapides : SA ≈ <i>distance de visibilité d’arrêt</i> (par ex. 60 km/h → 60 m, 80 km/h → 95 m, 100 km/h → 140 m). Lfe = k × L20. Approximation illuminance : E ≈ L / q<sub>0</sub>.</p>
+
+      <div class="legend">
+        <span class="tag"><span class="dot" style="background:var(--z-acces)"></span>Zone d’accès</span>
+        <span class="tag"><span class="dot" style="background:var(--z-entree)"></span>Zone d’entrée</span>
+        <span class="tag"><span class="dot" style="background:var(--z-transition)"></span>Zone de transition</span>
+        <span class="tag"><span class="dot" style="background:var(--z-centrale)"></span>Zone centrale</span>
+        <span class="tag"><span class="dot" style="background:var(--z-sortie)"></span>Zone de sortie</span>
+        <span class="tag"><span class="dot" style="background:var(--z-air)"></span>Zone de sortie à l’air libre</span>
+      </div>
+    </section>
+
+    <!-- Schéma -->
+    <section class="panel">
+      <div class="svgwrap">
+        <svg id="tunnelSVG" viewBox="0 0 1200 360" width="100%" height="360" preserveAspectRatio="none" aria-label="Schéma de tunnel">
+          <!-- fond -->
+          <rect x="0" y="0" width="1200" height="360" fill="#0b1220"/>
+          <!-- bande route -->
+          <rect x="0" y="220" width="1200" height="36" fill="var(--road)"/>
+          <rect x="0" y="256" width="1200" height="12" fill="#111827"/>
+
+          <!-- zones (largeurs mises à jour en JS) -->
+          <g id="zones">
+            <rect id="zAcces"     x="0"   y="80" width="200" height="180" fill="var(--z-acces)"  opacity=".9"/>
+            <rect id="zEntree"    x="200" y="80" width="200" height="180" fill="var(--z-entree)" opacity=".95"/>
+            <rect id="zTrans"     x="400" y="80" width="200" height="180" fill="var(--z-transition)"/>
+            <rect id="zCentrale"  x="600" y="80" width="400" height="180" fill="var(--z-centrale)"/>
+            <rect id="zSortie"    x="1000" y="80" width="120" height="180" fill="var(--z-sortie)"/>
+            <rect id="zAir"       x="1120" y="80" width="80" height="180" fill="var(--z-air)"/>
+          </g>
+
+          <!-- demi-voûte tunnel (effet) -->
+          <path d="M200,140 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
+          <path d="M1000,140 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
+
+          <!-- échelle / légendes -->
+          <g font-family="Inter, system-ui, Segoe UI" font-size="14" fill="white">
+            <text id="lblAcces"    x="10"   y="76">Zone d’accès</text>
+            <text id="lblEntree"   x="210"  y="76">Zone d’entrée</text>
+            <text id="lblTrans"    x="410"  y="76">Zone de transition</text>
+            <text id="lblCentrale" x="610"  y="76">Zone centrale</text>
+            <text id="lblSortie"   x="1010" y="76">Zone de sortie</text>
+            <text id="lblAir"      x="1130" y="76">Sortie à l’air libre</text>
+          </g>
+
+          <!-- courbe verte indicative (variation de luminance) -->
+          <path id="curve" d="M10,120 C160,110 260,115 380,130 S620,160 980,160 1120,150 1180,120"
+                fill="none" stroke="#22d3ee" stroke-width="6" opacity=".9"/>
+
+          <!-- barre d'échelle m -->
+          <g id="scale" transform="translate(40,330)" font-family="Inter, system-ui, Segoe UI" font-size="12" fill="white">
+            <line x1="0" y1="0" x2="400" y2="0" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="0" y1="-6" x2="0" y2="6" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="400" y1="-6" x2="400" y2="6" stroke="#94a3b8" stroke-width="2"/>
+            <text id="scaleText" x="200" y="-8" text-anchor="middle">Échelle: 400 m</text>
+          </g>
+        </svg>
+      </div>
+      <p class="hint"><small class="units">Le schéma est proportionnel : les largeurs des blocs reflètent les longueurs calculées (unité d’échelle visible sous le dessin).</small></p>
+    </section>
+  </div>
+
+<script>
+(function(){
+  const els = {
+    speed:      document.getElementById('speed'),
+    sa:         document.getElementById('sa'),
+    L20:        document.getElementById('L20'),
+    kpermille:  document.getElementById('kpermille'),
+    q0:         document.getElementById('q0'),
+    LfC:        document.getElementById('LfC'),
+    lenTotal:   document.getElementById('lenTotal'),
+    ratioTrans: document.getElementById('ratioTrans'),
+    vLfe:       document.getElementById('vLfe'),
+    vEentree:   document.getElementById('vEentree'),
+    vLfC:       document.getElementById('vLfC'),
+    vEc:        document.getElementById('vEc'),
+    presetDay:  document.getElementById('presetDay'),
+    presetNight:document.getElementById('presetNight'),
+  };
+
+  // SVG parts
+  const svg = {
+    zAcces:    document.getElementById('zAcces'),
+    zEntree:   document.getElementById('zEntree'),
+    zTrans:    document.getElementById('zTrans'),
+    zCentrale: document.getElementById('zCentrale'),
+    zSortie:   document.getElementById('zSortie'),
+    zAir:      document.getElementById('zAir'),
+    lblAcces:  document.getElementById('lblAcces'),
+    lblEntree: document.getElementById('lblEntree'),
+    lblTrans:  document.getElementById('lblTrans'),
+    lblCentrale:document.getElementById('lblCentrale'),
+    lblSortie: document.getElementById('lblSortie'),
+    lblAir:    document.getElementById('lblAir'),
+    curve:     document.getElementById('curve'),
+    scaleText: document.getElementById('scaleText')
+  };
+
+  // Map vitesse -> SA (m) selon repères usuels (approximations)
+  const SAref = new Map([[50,45],[60,60],[70,80],[80,95],[90,120],[100,140]]);
+  function updateSAfromSpeed(){
+    const v = +els.speed.value;
+    if(!els.sa.value) els.sa.value = SAref.get(v) || Math.round(v*1.4);
+  }
+
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+  function fmt(n, d=1){
+    if(!isFinite(n)) return '–';
+    return Number(n).toLocaleString('fr-CH',{maximumFractionDigits:d, minimumFractionDigits:d});
+  }
+
+  function layout(){
+    const W = 1120; // largeur utile pour les 5 zones internes + air
+    const pxpm = scalePxPerMeter(); // pixels par mètre
+
+    // longueurs en m
+    const SA = Math.max(1, +els.sa.value || 0);
+    const Ltotal = Math.max(10, +els.lenTotal.value || 0);
+    const Laccess = SA;           // avant portail
+    const Lentree = SA;           // dans le tunnel
+    const Ltrans  = Math.max(0, (Number(els.ratioTrans.value)||1)*SA);
+    const Lsortie = Math.max(10, Math.min(0.2*SA, 40));  // petit tronçon interne
+    let Lcentrale = Ltotal - (Lentree + Ltrans + Lsortie);
+    if(Lcentrale < 10){ Lcentrale = 10; } // garde-fou
+
+    // zone à l’air libre = 2*SA (hors tunnel, juste pour visuel)
+    const Lair = 2*SA;
+
+    // conversion en px
+    const wAcces = clamp(Laccess*pxpm, 20, W);
+    const wEntree= clamp(Lentree*pxpm, 20, W);
+    const wTrans = clamp(Ltrans *pxpm,  10, W);
+    const wSortie= clamp(Lsortie*pxpm, 10, W);
+    const wCentr = clamp(Lcentrale*pxpm, 30, W);
+    const wAir   = clamp(Lair*pxpm, 20, 300);
+
+    // placer
+    let x=0;
+    setRect(svg.zAcces, x, wAcces); svg.lblAcces.setAttribute('x', x+10); x+=wAcces;
+    setRect(svg.zEntree,x, wEntree);svg.lblEntree.setAttribute('x',x+10); x+=wEntree;
+    setRect(svg.zTrans, x, wTrans); svg.lblTrans.setAttribute('x', x+10); x+=wTrans;
+    setRect(svg.zCentrale,x, wCentr);svg.lblCentrale.setAttribute('x',x+10); x+=wCentr;
+    setRect(svg.zSortie, x, wSortie);svg.lblSortie.setAttribute('x', x+10); x+=wSortie;
+    setRect(svg.zAir, x, wAir);     svg.lblAir.setAttribute('x', x+10);
+
+    // courbe indicative (simple spline en fonction des largeurs)
+    const y0 = 120, yMin=110, yTrans=160, yC=160, yUp=130;
+    const p = [];
+    const x0 = 10;
+    p.push([x0, y0]);
+    p.push([wAcces*0.6, yMin]);
+    p.push([wAcces + wEntree*0.6, yMin+10]);
+    p.push([wAcces + wEntree + wTrans*0.5, yTrans]);
+    p.push([wAcces + wEntree + wTrans + wCentr*0.7, yC]);
+    p.push([wAcces + wEntree + wTrans + wCentr + wSortie*0.9, yUp]);
+    p.push([wAcces + wEntree + wTrans + wCentr + wSortie + wAir*0.9, y0]);
+    svg.curve.setAttribute('d', catmullRomToBezier(p));
+
+    // échelle visuelle
+    const metersShown = Math.round(400/pxpm);
+    svg.scaleText.textContent = 'Échelle: ' + Math.round(400/pxpm) + ' m';
+  }
+
+  function setRect(r, x, w){ r.setAttribute('x', x); r.setAttribute('width', w); }
+  function scalePxPerMeter(){
+    // On fixe une échelle pour tenir dans ~1000 px de largeur de zones internes.
+    const nominalPx = 900; // cible
+    // estimer longueur totale "dessinée" (sans air libre)
+    const SA = Math.max(1, +els.sa.value || 0);
+    const Ltrans = (Number(els.ratioTrans.value)||1)*SA;
+    const Lsortie = Math.max(10, Math.min(0.2*SA, 40));
+    const L = (+els.lenTotal.value||600);
+    const Ldraw = (SA + SA + Ltrans + L + Lsortie); // approximatif (accès + entrée + trans + centrale incluse dans L)
+    return nominalPx / Ldraw;
+  }
+
+  // Catmull-Rom to Bezier path helper
+  function catmullRomToBezier(points){
+    if(points.length<2) return '';
+    const path = ['M', points[0][0], points[0][1]];
+    for(let i=0;i<points.length-1;i++){
+      const p0 = points[i-1] || points[i];
+      const p1 = points[i];
+      const p2 = points[i+1];
+      const p3 = points[i+2] || p2;
+      const c1x = p1[0] + (p2[0]-p0[0]) / 6;
+      const c1y = p1[1] + (p2[1]-p0[1]) / 6;
+      const c2x = p2[0] - (p3[0]-p1[0]) / 6;
+      const c2y = p2[1] - (p3[1]-p1[1]) / 6;
+      path.push('C', c1x, c1y, c2x, c2y, p2[0], p2[1]);
+    }
+    return path.join(' ');
+  }
+
+  function compute(){
+    // Préremplir SA depuis vitesse si vide
+    updateSAfromSpeed();
+
+    const L20 = +els.L20.value || 0;
+    const kpermille = +els.kpermille.value || 0; // ‰
+    const k = kpermille/1000;
+    const q0 = Math.max(0.01, +els.q0.value || 0.07);
+    const LfC = +els.LfC.value || 0;
+
+    const Lfe = (L20 && k) ? (k * L20) : NaN;
+    const Eentree = isFinite(Lfe) ? (Lfe / q0) : NaN;
+    const Ec = (LfC && q0) ? (LfC / q0) : NaN;
+
+    els.vLfe.textContent = fmt(Lfe,1);
+    els.vEentree.textContent = fmt(Eentree,0);
+    els.vLfC.textContent = fmt(LfC,1);
+    els.vEc.textContent = fmt(Ec,0);
+
+    layout();
+  }
+
+  // Presets
+  els.presetDay.addEventListener('click', ()=>{
+    if(!els.kpermille.value) els.kpermille.value = 25; // 25 ‰
+    if(!els.LfC.value) els.LfC.value = 3.0;           // exemple
+    if(!els.q0.value) els.q0.value = 0.07;
+    compute();
+  });
+  els.presetNight.addEventListener('click', ()=>{
+    els.kpermille.value = 0; // pas d’adaptation
+    if(!els.LfC.value) els.LfC.value = 1.5;
+    compute();
+  });
+
+  // Listeners
+  ['change','input'].forEach(ev=>{
+    Object.values(els).forEach(e=>{
+      if(e && e.tagName) e.addEventListener(ev, compute);
+    });
+  });
+
+  // init
+  updateSAfromSpeed();
+  compute();
+})();
+</script>
+</body>
+</html>
