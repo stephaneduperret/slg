@@ -1,101 +1,135 @@
-/* ----- STYLE GLOBAL DU MENU ----- */
+/* ====== MENU GLOBAL ====== */
 
 .top-menu {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 30px;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
-  background: rgba(17, 25, 40, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-family: "Inter", system-ui, sans-serif;
-  color: #e8ecf1;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 14px 28px;
+  background: rgba(8, 12, 20, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.30);
+
+  font-family: "Inter", system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  color: #ffffff;
 }
 
 .menu-logo {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #7cc4ff;
-  text-shadow: 0 0 10px rgba(124, 196, 255, 0.3);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #eaf4ff;
+  white-space: nowrap;
 }
 
+/* Liens (version ordinateur par défaut) */
 .menu-links {
   display: flex;
-  gap: 28px;
   align-items: center;
-  transition: all 0.3s ease;
+  gap: 30px;
 }
 
 .menu-links a {
   text-decoration: none;
-  color: #e8ecf1;
+  color: #ffffff;
   font-size: 17px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 8px 14px;
   border-radius: 10px;
-  padding: 6px 12px;
+
+  /* meilleure lisibilité */
+  text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+  transition: transform .2s ease, background-color .2s ease, color .2s ease;
 }
 
 .menu-links a:hover {
-  color: #7cc4ff;
-  background: rgba(124, 196, 255, 0.15);
+  background-color: rgba(124, 196, 255, 0.18);
+  color: #bfe4ff;
   transform: translateY(-2px);
 }
 
-/* ----- BOUTON BURGER ----- */
+/* Focus clavier accessible */
+.menu-links a:focus-visible,
+.menu-toggle:focus-visible {
+  outline: 2px solid #7cc4ff;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
 
+/* Le bouton hamburger est caché par défaut (ordinateur) */
 .menu-toggle {
   display: none;
   background: none;
   border: none;
-  color: #e8ecf1;
-  font-size: 26px;
+  color: #ffffff;
+  font-size: 28px;
+  line-height: 1;
   cursor: pointer;
-  transition: transform 0.3s ease;
 }
 
-.menu-toggle:hover {
-  transform: scale(1.1);
-}
+/* ====== VERSION MOBILE / TABLETTE (seulement appareils tactiles) ======
+   Détection par capacités d'entrée : pointer grossier + pas de hover.
+   Cela évite d'afficher le hamburger sur un navigateur ordinateur,
+   même si la fenêtre est étroite.
+*/
+@media (hover: none) and (pointer: coarse) {
+  .menu-toggle {
+    display: block;
+  }
 
-/* ----- VERSION MOBILE ----- */
-
-@media (max-width: 720px) {
   .menu-links {
     position: absolute;
-    top: 60px;
     left: 0;
     right: 0;
+    top: 60px;
+
     flex-direction: column;
-    background: rgba(15, 20, 35, 0.95);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: stretch;
+    gap: 0;
+
+    background: rgba(8, 12, 20, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(8px);
-    overflow: hidden;
+
     max-height: 0;
     opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height .28s ease, opacity .28s ease, padding .28s ease;
   }
 
   .menu-links.show {
-    max-height: 300px;
+    max-height: 360px;
     opacity: 1;
-    padding: 16px 0;
+    padding: 8px 0;
   }
 
   .menu-links a {
-    width: 100%;
-    text-align: center;
-    padding: 12px 0;
+    display: block;
+    padding: 14px 20px;
     font-size: 18px;
+    border-radius: 0;
   }
 
-  .menu-toggle {
-    display: block;
+  .menu-links a:hover {
+    transform: none;
+    background-color: rgba(124, 196, 255, 0.15);
+    color: #d8efff;
+  }
+}
+
+/* Petite optimisation pour très grands écrans : limiter l'étirement */
+@media (min-width: 1400px) {
+  .top-menu {
+    padding-left: max(28px, calc((100vw - 1280px) / 2));
+    padding-right: max(28px, calc((100vw - 1280px) / 2));
   }
 }
