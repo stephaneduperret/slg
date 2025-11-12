@@ -4,48 +4,39 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Calcul mât & espacement – Éclairage public</title>
-  <script src="menu.js"></script>
+<script src="menu.js"></script>
 
 <style>
   :root{
-    --bg:#0f172a;          /* fond */
-    --card:#111827;        /* cartes */
-    --ink:#e5e7eb;         /* texte */
-    --muted:#94a3b8;       /* texte secondaire */
-    --accent:#22d3ee;      /* cyan pour valeurs */
-    --road:#4b5563;        /* route */
-    --kerb:#9ca3af;        /* bordures */
-    --grass:#14532d;       /* bas-côté */
+    --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8;
+    --accent:#22d3ee; --road:#4b5563; --kerb:#9ca3af; --grass:#14532d;
   }
   *{box-sizing:border-box}
   body{
     margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
-    background:linear-gradient(180deg,#0b1224, #0f172a 120px);
-    color:var(--ink);
-    min-height:100vh; display:flex; flex-direction:column; gap:18px;
+    background:linear-gradient(180deg,#0b1224,#0f172a 120px);
+    color:var(--ink); min-height:100vh; display:flex; flex-direction:column; gap:18px;
   }
   header{padding:18px 22px}
   header h1{margin:0; font-size:clamp(18px,2.5vw,24px); font-weight:650}
-  main{display:grid; grid-template-columns: minmax(280px,420px) 1fr; gap:18px; padding:0 22px 24px}
-  @media (max-width:900px){ main{grid-template-columns:1fr} }
+  main{display:grid; grid-template-columns:minmax(280px,420px) 1fr; gap:18px; padding:0 22px 24px}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
   .card{
-    background:linear-gradient(180deg, #0f172a 0%, #0b1224 100%);
-    border:1px solid #1f2937; border-radius:16px; padding:18px; box-shadow: 0 8px 30px rgba(0,0,0,.35);
+    background:linear-gradient(180deg,#0f172a 0%,#0b1224 100%);
+    border:1px solid #1f2937; border-radius:16px; padding:18px;
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
   }
   label{display:block; font-size:14px; color:var(--muted); margin-bottom:6px}
-  input[type="number"], input[type="range"]{
+  input[type="number"],input[type="range"]{
     width:100%; background:#0b1224; color:var(--ink);
-    border:1px solid #253048; border-radius:10px; padding:10px 12px; font-size:16px;
-    outline:none;
+    border:1px solid #253048; border-radius:10px; padding:10px 12px; font-size:16px; outline:none;
   }
   input[type="range"]{height:36px; padding:0}
   .row{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
-  .val{font-variant-numeric: tabular-nums; font-weight:700; color:var(--accent)}
+  .val{font-variant-numeric:tabular-nums; font-weight:700; color:var(--accent)}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   .hint{font-size:12px; color:var(--muted)}
-  .kpi{
-    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px
-  }
+  .kpi{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
   .kpi .box{
     background:#0b1224; border:1px dashed #273043; border-radius:12px; padding:12px
   }
@@ -54,47 +45,43 @@
   .scene-wrap{position:relative}
   .legend{
     position:absolute; top:10px; left:10px; font-size:12px; color:var(--muted);
-    background:#0b1224AA; backdrop-filter: blur(2px);
+    background:#0b1224AA; backdrop-filter:blur(2px);
     border:1px solid #253048; border-radius:10px; padding:8px 10px
   }
-  /* SCÈNE */
   .scene{
     position:relative; width:100%; height:520px; border-radius:16px; overflow:hidden;
-    background: radial-gradient(1200px 420px at 60% 0%, #0f172a 0%, #0b1224 60%, #09111f 100%);
+    background:radial-gradient(1200px 420px at 60% 0%,#0f172a 0%,#0b1224 60%,#09111f 100%);
     border:1px solid #1f2937;
   }
-  .terrain{position:absolute; inset:0; display:grid; grid-template-rows: 1fr auto 1fr}
-  .grass{background: repeating-linear-gradient(90deg, #0f2c1c, #0f2c1c 20px, #103422 20px, #103422 40px)}
+  .terrain{position:absolute; inset:0; display:grid; grid-template-rows:1fr auto 1fr}
+  .grass{background:repeating-linear-gradient(90deg,#0f2c1c,#0f2c1c 20px,#103422 20px,#103422 40px)}
   .road{
-    height:160px; background:linear-gradient(#6b7280,#4b5563 40%, #4b5563 60%, #6b7280);
-    border-top:8px solid var(--kerb); border-bottom:8px solid var(--kerb);
-    position:relative
+    height:160px; background:linear-gradient(#6b7280,#4b5563 40%,#4b5563 60%,#6b7280);
+    border-top:8px solid var(--kerb); border-bottom:8px solid var(--kerb); position:relative
   }
-  .road::before, .road::after{ /* ligne médiane */
+  .road::before,.road::after{
     content:""; position:absolute; left:0; right:0; top:calc(50% - 2px); height:4px;
-    background: repeating-linear-gradient(90deg, #e5e7eb 0 30px, transparent 30px 60px); opacity:.8
+    background:repeating-linear-gradient(90deg,#e5e7eb 0 30px,transparent 30px 60px); opacity:.8
   }
   .lane-dim{
     position:absolute; right:10px; top:-60px; width:6px; background:#22d3ee; height:0;
-    transform-origin: bottom; border-radius:3px;
+    transform-origin:bottom; border-radius:3px;
   }
   .lane-dim::after{
     content:attr(data-h) " m"; position:absolute; left:10px; top:-16px; font-size:12px; color:var(--ink);
     background:#0b1224; padding:2px 6px; border:1px solid #253048; border-radius:8px
   }
-  /* Candélabres (SVG) */
   .lamp{
     position:absolute; bottom:160px; width:50px; transform:translateX(-50%);
     display:flex; flex-direction:column; align-items:center; gap:4px
   }
   .mast{
-    width:8px; height:120px; background: linear-gradient(#0b0f17, #111827);
-    border:1px solid #1f2937; border-radius:4px 4px 2px 2px;
-    position:relative;
+    width:8px; height:120px; background:linear-gradient(#0b0f17,#111827);
+    border:1px solid #1f2937; border-radius:4px 4px 2px 2px; position:relative;
   }
-  .mast::after{ /* lanterne */
+  .mast::after{
     content:""; position:absolute; top:-26px; left:50%; transform:translateX(-50%);
-    width:26px; height:26px; background: radial-gradient(#fde68a, #fbbf24 60%, #f59e0b);
+    width:26px; height:26px; background:radial-gradient(#fde68a,#fbbf24 60%,#f59e0b);
     border:2px solid #1f2937; border-radius:6px 6px 18px 18px; box-shadow:0 0 24px 6px #fde68a66
   }
   .lamp .h-label{
@@ -105,182 +92,148 @@
     position:absolute; bottom:200px; left:0; right:0; height:0; border-bottom:2px dashed #22d3ee;
   }
   .measure::after{
-    content:attr(data-e) " m"; position:absolute; left:50%; transform:translate(-50%, 10px);
-    font-size:12px; color:var(--ink); background:#0b1224; padding:2px 6px; border:1px solid #253048; border-radius:8px
+    content:attr(data-e) " m"; position:absolute; left:50%; transform:translate(-50%,10px);
+    font-size:12px; color:var(--ink); background:#0b1224;
+    padding:2px 6px; border:1px solid #253048; border-radius:8px
   }
   footer{padding:0 22px 26px; color:var(--muted); font-size:12px}
 </style>
 </head>
 <body>
-  <header>
-    <h1>Calcul de la hauteur d’un mât et de l’espacement entre deux candélabres</h1>
-  </header>
+<header>
+  <h1>Calcul de la hauteur d’un mât et de l’espacement entre deux candélabres</h1>
+</header>
 
-  <main>
-    <!-- Panneau de contrôle -->
-    <section class="card">
-      <div class="row" style="margin-bottom:10px;">
-        <label for="w">Largeur de la route (m)</label>
-        <span class="val" id="wOut">18,0</span>
-      </div>
-      <div class="grid-2" style="margin-bottom:14px;">
-        <input id="w" type="range" min="2" max="40" step="0.1" value="18">
-        <input id="wNum" type="number" min="2" max="40" step="0.1" value="18">
-      </div>
-      <p class="hint">Formules utilisées : H = 0,8 × largeur ; e = 5 × H</p>
+<main>
+  <section class="card">
+    <div class="row" style="margin-bottom:10px;">
+      <label for="w">Largeur de la route (m)</label>
+      <span class="val" id="wOut">18,0</span>
+    </div>
+    <div class="grid-2" style="margin-bottom:14px;">
+      <input id="w" type="range" min="2" max="40" step="0.1" value="18">
+      <input id="wNum" type="number" min="2" max="40" step="0.1" value="18">
+    </div>
+    <p class="hint">Formules utilisées : H = 0,8 × largeur ; e = 5 × H</p>
 
-      <div class="kpi">
-        <div class="box">
-          <h3>Hauteur du mât (H)</h3>
-          <p><span id="hVal">4</span> m</p>
-        </div>
-        <div class="box">
-          <h3>Espacement entre mâts (e)</h3>
-          <p><span id="eVal">20</span> m</p>
-        </div>
+    <div class="kpi">
+      <div class="box">
+        <h3>Hauteur du mât (H)</h3>
+        <p><span id="hVal">4</span> m</p>
       </div>
-      <div class="kpi">
-        <div class="box">
-          <h3>H arrondi</h3>
-          <p><span id="hRound">4</span> m</p>
-        </div>
-        <div class="box">
-          <h3>e arrondi</h3>
-          <p><span id="eRound">20</span> m</p>
-        </div>
+      <div class="box">
+        <h3>Espacement entre mâts (e)</h3>
+        <p><span id="eVal">20</span> m</p>
       </div>
-    </section>
-
-    <!-- Scène -->
-    <section class="card scene-wrap">
-      <div class="legend">
-        Visualisation à l’échelle : 1 m ≈ <span class="val" id="scalePx">8</span> px
+    </div>
+    <div class="kpi">
+      <div class="box">
+        <h3>H arrondi</h3>
+        <p><span id="hRound">4</span> m</p>
       </div>
-      <div class="scene" id="scene">
-        <div class="terrain">
-          <div class="grass"></div>
-          <div class="road" id="road">
-            <div class="lane-dim" id="hBar" data-h="H"></div>
-          </div>
-          <div class="grass"></div>
-        </div>
-
-        <!-- ligne de mesure d'espacement -->
-        <div class="measure" id="measure" data-e="e"></div>
-
-        <!-- Candélabres -->
-        <div class="lamp" id="lampA" style="left:15%;">
-          <div class="mast" id="mastA"></div>
-          <div class="h-label" id="hTextA">H</div>
-        </div>
-        <div class="lamp" id="lampB" style="left:50%;">
-          <div class="mast" id="mastB"></div>
-          <div class="h-label" id="hTextB">H</div>
-        </div>
+      <div class="box">
+        <h3>e arrondi</h3>
+        <p><span id="eRound">20</span> m</p>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer>
-    Astuce : faites glisser le curseur ou tapez une valeur précise de largeur de route pour voir la hauteur des mâts et l’espacement se mettre à jour, ainsi que la scène.
-  </footer>
+  <section class="card scene-wrap">
+    <div class="legend">Visualisation à l’échelle : 1 m ≈ <span class="val" id="scalePx">8</span> px</div>
+    <div class="scene" id="scene">
+      <div class="terrain">
+        <div class="grass"></div>
+        <div class="road" id="road">
+          <div class="lane-dim" id="hBar" data-h="H"></div>
+        </div>
+        <div class="grass"></div>
+      </div>
+      <div class="measure" id="measure" data-e="e"></div>
+      <div class="lamp" id="lampA" style="left:15%;">
+        <div class="mast" id="mastA"></div>
+        <div class="h-label" id="hTextA">H</div>
+      </div>
+      <div class="lamp" id="lampB" style="left:50%;">
+        <div class="mast" id="mastB"></div>
+        <div class="h-label" id="hTextB">H</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Astuce : faites glisser le curseur ou tapez une valeur précise de largeur de route pour voir la hauteur des mâts et l’espacement se mettre à jour, ainsi que la scène.
+</footer>
 
 <script>
 (function(){
   const $ = (id)=>document.getElementById(id);
 
-  const wRange = $("w");
-  const wNum   = $("wNum");
-  const wOut   = $("wOut");
-  const hVal   = $("hVal");
-  const eVal   = $("eVal");
-  const hRound = $("hRound");
-  const eRound = $("eRound");
+  const wRange=$("w"),wNum=$("wNum"),wOut=$("wOut"),hVal=$("hVal"),eVal=$("eVal"),
+        hRound=$("hRound"),eRound=$("eRound"),
+        mastA=$("mastA"),mastB=$("mastB"),
+        hTextA=$("hTextA"),hTextB=$("hTextB"),
+        measure=$("measure"),scene=$("scene"),hBar=$("hBar"),scalePxText=$("scalePx");
 
-  const mastA = $("mastA"), mastB = $("mastB");
-  const hTextA = $("hTextA"), hTextB = $("hTextB");
-  const measure = $("measure");
-  const scene = $("scene");
-  const hBar = $("hBar");
-  const scalePxText = $("scalePx");
+  const fmt=(n,d=1)=>n.toLocaleString('fr-CH',{minimumFractionDigits:d,maximumFractionDigits:d});
 
-  // Format FR avec virgule
-  const fmt = (n, d=1)=> n.toLocaleString('fr-CH', {minimumFractionDigits:d, maximumFractionDigits:d});
-
-  // Mise à l'échelle px/m pour que tout reste visible
   function getScalePx(){
-    const w = Number(wRange.value);         // largeur route en m
-    const maxE = 4 * (0.8 * w);             // espacement en m
-    // on veut que e tienne dans ~70% de la largeur de la scène
-    const usable = scene.clientWidth * 0.7;
-    const sx = Math.max(4, Math.min(16, usable / maxE)); // bornes 4..16 px/m
-    return sx;
+    const w=Number(wRange.value);
+    const maxE=5*(0.8*w);
+    const usable=scene.clientWidth*0.7;
+    return Math.max(4,Math.min(16,usable/maxE));
   }
 
   function update(){
-    const w = Number(wRange.value);
-    wNum.value = w;
-    wOut.textContent = fmt(w,1);
+    const w=Number(wRange.value);
+    wNum.value=w;
+    wOut.textContent=fmt(w,1);
 
-    const H = 0.8 * w;
-    const e = 4 * H;
+    const H=0.8*w;
+    const e=5*H;
 
-    hVal.textContent = fmt(H,1);
-    eVal.textContent = fmt(e,1);
-    hRound.textContent = Math.round(H);
-    eRound.textContent = Math.round(e);
+    hVal.textContent=fmt(H,1);
+    eVal.textContent=fmt(e,1);
+    hRound.textContent=Math.round(H);
+    eRound.textContent=Math.round(e);
 
-    // Échelle
-    const S = getScalePx();
-    scalePxText.textContent = Math.round(S);
+    const S=getScalePx();
+    scalePxText.textContent=Math.round(S);
 
-    // Hauteur des mâts en pixels (un peu plus pour le fût visible au-dessus du trottoir)
-    const mastPx = Math.max(40, H * S); // garde une taille minimale
-    [mastA, mastB].forEach(m=>{
-      m.style.height = mastPx + "px";
-    });
-    hTextA.textContent = "H = " + fmt(H,1) + " m";
-    hTextB.textContent = "H = " + fmt(H,1) + " m";
+    const mastPx=Math.max(40,H*S);
+    [mastA,mastB].forEach(m=>m.style.height=mastPx+"px");
+    hTextA.textContent="H = "+fmt(H,1)+" m";
+    hTextB.textContent="H = "+fmt(H,1)+" m";
 
-    // Position horizontale des candélabres (espacement e en mètres → pixels)
-    const center = scene.clientWidth * 0.5;
-    const pxE = e * S;
+    const center=scene.clientWidth*0.5;
+    const pxE=e*S;
 
-    const left = Math.max(90, center - pxE/2);
-    const right = Math.min(scene.clientWidth - 90, center + pxE/2);
+    const left=Math.max(90,center-pxE/2);
+    const right=Math.min(scene.clientWidth-90,center+pxE/2);
 
-    $("lampA").style.left = left + "px";
-    $("lampB").style.left = right + "px";
+    $("lampA").style.left=left+"px";
+    $("lampB").style.left=right+"px";
 
-    // Ligne de mesure d'espacement
-    measure.style.left = left + "px";
-    measure.style.right = (scene.clientWidth - right) + "px";
-    measure.setAttribute("data-e", "e = " + fmt(e,1) + " m");
+    measure.style.left=left+"px";
+    measure.style.right=(scene.clientWidth-right)+"px";
+    measure.setAttribute("data-e","e = "+fmt(e,1)+" m");
 
-    // Barre verticale pour visualiser H le long de la route
-    hBar.style.height = (H*S) + "px";
-    hBar.setAttribute("data-h", "H = " + fmt(H,1));
+    hBar.style.height=(H*S)+"px";
+    hBar.setAttribute("data-h","H = "+fmt(H,1));
   }
 
-  // Sync inputs
-  wRange.addEventListener('input', update);
-  wNum.addEventListener('input', e=>{
-    let v = parseFloat(wNum.value || 0);
-    if(isNaN(v)) v = 18;
-    v = Math.max(2, Math.min(40, v));
-    wRange.value = v;
+  wRange.addEventListener('input',update);
+  wNum.addEventListener('input',()=>{
+    let v=parseFloat(wNum.value||0);
+    if(isNaN(v))v=18;
+    v=Math.max(2,Math.min(40,v));
+    wRange.value=v;
     update();
   });
 
-  // Recalcule à chaque redimensionnement (pour l'échelle)
-  window.addEventListener('resize', update, {passive:true});
-
-  // init
+  window.addEventListener('resize',update,{passive:true});
   update();
 })();
 </script>
 </body>
 </html>
-
-
-
