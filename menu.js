@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
         <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
         <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>
+        <a href="https://stephaneduperret.github.io/slg/tunnel.html">Flux dans les tunnels</a>
       </div>
     </nav>
   `
@@ -24,3 +25,4 @@ document.addEventListener("DOMContentLoaded", function () {
     links.classList.toggle("show")
   })
 })
+
