@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calcul de distance d’arrêt</title>
+<style>
+  :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--radius:18px;--ring:0 0 0 3px rgba(34,211,238,.25)}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:linear-gradient(180deg,#0b1220,#0b1322 40%,#0a1426)}
+  .wrap{max-width:820px;margin:auto;display:grid;gap:20px}
+  .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  h1{margin:0 0 8px;font-size:26px;letter-spacing:.2px}
+  p{margin:0 0 10px;color:var(--muted)}
+  label{display:block;margin:10px 0 6px;color:var(--muted)}
+  input[type="number"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#0b1324;color:var(--ink);outline:none}
+  input[type="number"]:focus{box-shadow:var(--ring);border-color:#1f394f}
+  .row{display:grid;grid-template-columns:1fr 140px;gap:12px;align-items:center}
+  .slider{width:100%}
+  .result{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+  .pill{background:#0c1930;border:1px solid #1e293b;border-radius:14px;padding:12px}
+  .pill span{display:block;font-size:12px;color:var(--muted)}
+  .pill b{display:block;font-size:20px;margin-top:4px;color:var(--accent)}
+  .big{font-size:48px;line-height:1.05;margin:6px 0;color:#7dd3fc}
+  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b1428;border:1px dashed #1f2a44;padding:10px;border-radius:10px;color:#cbd5e1}
+  .foot{color:#93a3b5;font-size:12px}
+  @media (max-width:720px){.result{grid-template-columns:1fr}.row{grid-template-columns:1fr}.big{font-size:38px}}
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Calcul de la distance d’arrêt</h1>
+      <p>SD = (v/10)<sup>2</sup> + 3·(v/10) &nbsp;&nbsp;|&nbsp;&nbsp; v en km/h, SD en mètres.</p>
+
+      <div class="row">
+        <div>
+          <label for="v">Vitesse v (km/h)</label>
+          <input id="v" type="number" min="0" step="1" value="50" inputmode="numeric" />
+        </div>
+        <input id="s" class="slider" type="range" min="0" max="200" step="1" value="50" aria-label="Vitesse (curseur)" />
+      </div>
+
+      <div class="result">
+        <div class="pill"><span>Réaction 3·(v/10)</span><b id="dreac">15.0 m</b></div>
+        <div class="pill"><span>Freinage (v/10)²</span><b id="dfrein">25.0 m</b></div>
+        <div class="pill"><span>Distance d’arrêt</span><div class="big" id="dtotal">40.0 m</div></div>
+      </div>
+
+      <div style="margin-top:16px" class="formula">
+        <span id="detail">SD = (5.0)² + 3·(5.0) = 25.0 + 15.0 = 40.0 m</span>
+      </div>
+      <p class="foot" style="margin-top:10px">La partie « réaction » suppose ~1&nbsp;s de réaction.</p>
+    </section>
+  </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const vInput = document.getElementById('v');
+  const vSlider = document.getElementById('s');
+  const dreac = document.getElementById('dreac');
+  const dfrein = document.getElementById('dfrein');
+  const dtotal = document.getElementById('dtotal');
+  const detail = document.getElementById('detail');
+
+  const fmt = n => (Math.round(n*10)/10).toFixed(1);
+
+  function compute(vRaw){
+    const v = Math.max(0, Math.min(300, Number(String(vRaw).replace(',', '.')) || 0));
+    const v10 = v/10;
+    const reaction = 3*v10;
+    const freinage = v10*v10;
+    const total = reaction + freinage;
+    dreac.textContent = fmt(reaction) + " m";
+    dfrein.textContent = fmt(freinage) + " m";
+    dtotal.textContent = fmt(total) + " m";
+    detail.textContent = `SD = (${fmt(v10)})² + 3·(${fmt(v10)}) = ${fmt(freinage)} + ${fmt(reaction)} = ${fmt(total)} m`;
+  }
+
+  function syncFromInput(){
+    const v = vInput.value;
+    vSlider.value = v || 0;
+    compute(v);
+  }
+  function syncFromSlider(){
+    vInput.value = vSlider.value;
+    compute(vSlider.value);
+  }
+
+  // Écoutes robustes
+  ['input','change','keyup'].forEach(ev => vInput.addEventListener(ev, syncFromInput));
+  ['input','change'].forEach(ev => vSlider.addEventListener(ev, syncFromSlider));
+
+  compute(vInput.value);
+});
+</script>
+</body>
+</html>
