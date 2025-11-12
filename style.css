@@ -4,7 +4,125 @@
   width: 100%;
   position: fixed;
   top: 0;
+  left: 0;/* ===== STYLE GLOBAL DU MENU ===== */
+
+.top-menu {
+  width: 100%;
+  position: fixed;
+  top: 0;
   left: 0;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 26px;
+  background: rgba(10, 15, 25, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  font-family: "Inter", system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  color: #eaf4ff;
+}
+
+.menu-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #7cc4ff;
+  text-shadow: 0 0 10px rgba(124, 196, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* --- Liens du menu (version bureau) --- */
+.menu-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.menu-links a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 17px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.menu-links a:hover {
+  background: rgba(124, 196, 255, 0.15);
+  color: #bfe4ff;
+  transform: translateY(-2px);
+}
+
+/* --- Bouton hamburger (caché sur ordinateur) --- */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* ===== VERSION MOBILE ===== */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-links {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(8, 12, 20, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.35s ease;
+  }
+
+  .menu-links.show {
+    max-height: 300px;
+    opacity: 1;
+    padding: 10px 0;
+  }
+
+  .menu-links a {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 0;
+    font-size: 18px;
+    border-radius: 0;
+  }
+
+  .menu-links a:hover {
+    background: rgba(124, 196, 255, 0.15);
+    transform: none;
+  }
+}
+
+/* Limiter l’étirement sur très grands écrans */
+@media (min-width: 1600px) {
+  .top-menu {
+    padding-left: calc((100vw - 1400px) / 2);
+    padding-right: calc((100vw - 1400px) / 2);
+  }
+}
+
   z-index: 9999;
 
   display: flex;
@@ -133,3 +251,4 @@
     padding-right: max(28px, calc((100vw - 1280px) / 2));
   }
 }
+
