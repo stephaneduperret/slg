@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Teinte des lumières recommandées</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#111827;
+      --accent:#f97316;
+      --border:#e5e7eb;
+      --text:#0f172a;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      padding:24px;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#f3f4f6;
+      color:var(--text);
+    }
+
+    .wrapper{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    h1{
+      margin-top:0;
+      margin-bottom:12px;
+      font-size:1.9rem;
+    }
+
+    p.intro{
+      margin-top:0;
+      margin-bottom:20px;
+    }
+
+    .card{
+      background:white;
+      border-radius:14px;
+      padding:18px 20px;
+      box-shadow:0 12px 30px rgba(15,23,42,0.09);
+      margin-bottom:22px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.95rem;
+    }
+
+    th,td{
+      border:1px solid var(--border);
+      padding:8px 10px;
+      vertical-align:top;
+    }
+
+    th{
+      background:#fde7cf;
+      font-weight:600;
+      text-align:left;
+    }
+
+    tr:nth-child(even) td{
+      background:#f9fafb;
+    }
+
+    .image-block{
+      text-align:center;
+    }
+
+    .image-block img{
+      max-width:100%;
+      height:auto;
+      border-radius:14px;
+      display:block;
+      margin:0 auto 10px auto;
+    }
+
+    .image-caption{
+      font-size:0.9rem;
+      color:#4b5563;
+    }
+
+    @media (max-width:700px){
+      body{padding:16px;}
+      h1{font-size:1.5rem;}
+      table{font-size:0.85rem;}
+      th,td{padding:6px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="card">
+      <h1>Teinte des lumières recommandées selon l’environnement</h1>
+      <p class="intro">
+        Vue d’ensemble des températures de couleur conseillées pour limiter l’impact sur la faune et les insectes tout en
+        garantissant la sécurité et le confort visuel.
+      </p>
+    </header>
+
+    <section class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Environnement / Usage</th>
+            <th>Température de couleur (K)</th>
+            <th>Impact recherché</th>
+            <th>Remarques</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Routes principales (M)</td>
+            <td>3000–3500</td>
+            <td>Bonne visibilité, confort visuel</td>
+            <td>2700&nbsp;K si zone sensible à la faune</td>
+          </tr>
+          <tr>
+            <td>Rues résidentielles (C, P)</td>
+            <td>2700–3000</td>
+            <td>Limitation de l’éblouissement, ambiance douce</td>
+            <td>Meilleur confort nocturne</td>
+          </tr>
+          <tr>
+            <td>Zones sensibles aux insectes</td>
+            <td>≤ 2200 (ambre)</td>
+            <td>Réduction forte de l’attraction des insectes</td>
+            <td>Éviter les lumières bleutées</td>
+          </tr>
+          <tr>
+            <td>Proximité de forêts / faune</td>
+            <td>1800–2700</td>
+            <td>Minimisation des perturbations comportementales</td>
+            <td>Couleur ambrée recommandée</td>
+          </tr>
+          <tr>
+            <td>Berges, zones humides</td>
+            <td>1800–2200</td>
+            <td>Protection des espèces nocturnes et aquatiques</td>
+            <td>Limiter diffusion latérale</td>
+          </tr>
+          <tr>
+            <td>Passages à faune / corridors</td>
+            <td>1800–2200</td>
+            <td>Réduction fragmentation écologique</td>
+            <td>Parfois éviter tout éclairage</td>
+          </tr>
+          <tr>
+            <td>Chemins piétons naturels</td>
+            <td>2200–2700</td>
+            <td>Respect du milieu, sécurité douce</td>
+            <td>Puissance réduite + détecteur</td>
+          </tr>
+          <tr>
+            <td>Espaces urbains animés</td>
+            <td>3000–4000</td>
+            <td>Meilleure reproduction des couleurs</td>
+            <td>À éviter près de zones naturelles</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card image-block">
+      <!-- Remplace les noms des fichiers par ceux que tu utilises réellement -->
+      <img src="temperature_couleur_exemple.png" alt="Exemple de différentes températures de couleur de 1800 K à 12000 K" />
+      <p class="image-caption">
+        Illustration des températures de couleur : de 1 800&nbsp;K (très chaud, orangé) à 12 000&nbsp;K (très froid, bleuâtre).
+      </p>
+    </section>
+  </div>
+</body>
+</html>
