@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>
         <a href="https://stephaneduperret.github.io/slg/tunnel.html">Flux dans les tunnels</a>
         <a href="https://stephaneduperret.github.io/slg/calculdistancedefreinage.html">Calcul distance de freinage</a>
-        <a href="https://stephaneduperret.github.io/slg/tableaudesluminosites.html">tableau des luminosites</a>
+        <a href="https://stephaneduperret.github.io/slg/tableaudesluminosites.html">Tableau des luminosités</a>
         
       </div>
     </nav>
@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     links.classList.toggle("show")
   })
 })
+
 
 
 
