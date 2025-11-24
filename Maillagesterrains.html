@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Maillage terrain de sport – calcul & mesure</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#0f172a;
+      color:#e5e7eb;
+      margin:0;
+      padding:20px;
+    }
+    .card{
+      max-width:1000px;
+      margin:0 auto;
+      background:#111827;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      display:flex;
+      flex-wrap:wrap;
+      gap:20px;
+    }
+    .left, .right{
+      flex:1 1 320px;
+      min-width:0;
+    }
+    h1{
+      font-size:1.4rem;
+      margin-top:0;
+      text-align:center;
+    }
+    label{
+      display:block;
+      margin-top:10px;
+    }
+    input{
+      width:100%;
+      padding:8px;
+      margin-top:4px;
+      border-radius:6px;
+      border:1px solid #374151;
+      background:#0b1120;
+      color:#e5e7eb;
+    }
+    button{
+      margin-top:15px;
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:8px;
+      background:#22d3ee;
+      color:#0f172a;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    button:hover{
+      opacity:0.9;
+    }
+    .result{
+      margin-top:15px;
+      padding:10px;
+      background:#020617;
+      border-radius:8px;
+      font-size:0.95rem;
+      line-height:1.5;
+    }
+    .bloc{
+      margin-top:10px;
+      padding:8px;
+      border-radius:8px;
+    }
+    .calc{
+      border:1px solid #22c55e;
+    }
+    .mesure{
+      border:1px solid #f97316;
+      margin-top:12px;
+    }
+    .titre-bloc{
+      font-weight:bold;
+      margin-bottom:4px;
+    }
+    .note{
+      font-size:0.85rem;
+      margin-top:10px;
+      color:#9ca3af;
+    }
+    .preview-title{
+      text-align:center;
+      margin-bottom:8px;
+      font-size:0.95rem;
+      color:#e5e7eb;
+    }
+    canvas{
+      border:1px solid #4b5563;
+      background:#020617;
+      border-radius:8px;
+      width:100%;
+      height:auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <h1>Maillage d'éclairement d'un terrain de sport</h1>
+
+      <label for="longueur">Longueur du terrain d1 (m)</label>
+      <input type="number" id="longueur" step="0.01" min="0">
+
+      <label for="largeur">Largeur du terrain d2 (m)</label>
+      <input type="number" id="largeur" step="0.01" min="0">
+
+      <button onclick="calculer()">Calculer</button>
+
+      <div id="resultat" class="result"></div>
+
+      <div class="note">
+        p<sub>max</sub> = 0,2 × 5<sup>log d</sup>, avec p ≤ 10 m.<br>
+        Grille de calcul : maillage complet.<br>
+        Grille de mesure : environ un point sur deux dans chaque direction,
+        en conservant un nombre impair de points.
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="preview-title">
+        Aperçu du maillage (points verts = calcul, points orange = mesure)
+      </div>
+      <canvas id="gridCanvas" width="600" height="380"></canvas>
+    </div>
+  </div>
+
+  <script>
+    function log10(x){
+      return Math.log(x) / Math.log(10);
+    }
+
+    function formaterNombre(n){
+      return n.toFixed(2).replace('.', ',');
+    }
+
+    // Renvoie l'entier impair le plus proche de x, minimum 1
+    function plusProcheImpair(x){
+      if (x <= 1) return 1;
+      let bas = Math.floor(x);
+      if (bas % 2 === 0) bas -= 1;
+      if (bas < 1) bas = 1;
+      let haut = bas + 2;
+      return (x - bas <= haut - x) ? bas : haut;
+    }
+
+    // Nombre de points sur la grande dimension (grille de calcul)
+    function nbPointsGrandeDimension(d, p){
+      let n = Math.floor(d / p) + 1;
+      if (n < 1) n = 1;
+      if (n % 2 === 0) n += 1; // forcer impair
+      return n;
+    }
+
+    // Nombre de points sur l'autre dimension (grille de calcul)
+    function nbPointsAutreDimension(d, pRef){
+      let n = Math.round(d / pRef);
+      if (n < 1) n = 1;
+      if (n % 2 === 0) n += 1; // forcer impair
+      return n;
+    }
+
+    // Grille de mesure : environ moitié des points, toujours impair,
+    // et au moins 3 points par direction.
+    function nbPointsMesure(nCalc){
+      let n = plusProcheImpair(nCalc / 2);
+      if (n < 3) n = 3;
+      return n;
+    }
+
+    function calculer(){
+      const d1 = parseFloat(document.getElementById("longueur").value);
+      const d2 = parseFloat(document.getElementById("largeur").value);
+      const zoneResultat = document.getElementById("resultat");
+
+      if(isNaN(d1) || isNaN(d2) || d1 <= 0 || d2 <= 0){
+        zoneResultat.innerHTML = "Merci de saisir une longueur et une largeur strictement positives.";
+        dessinerGrille(0,0,0,0,0,0);
+        return;
+      }
+
+      const dmax = Math.max(d1, d2);
+      const dmin = Math.min(d1, d2);
+      const rapport = dmax / dmin;
+
+      // d pour la formule pmax
+      let d;
+      if (rapport < 2){
+        d = dmax;
+      } else {
+        d = dmin;
+      }
+
+      let pMax = 0.2 * Math.pow(5, log10(d));
+      let p = Math.min(pMax, 10); // limite 10 m
+
+      // Grille de calcul
+      let nLongCalc, nLargCalc;
+      let pLongCalc, pLargCalc;
+
+      if (d1 >= d2){
+        // d1 = grande dimension
+        nLongCalc = nbPointsGrandeDimension(d1, p);
+        pLongCalc = d1 / (nLongCalc - 1);
+
+        nLargCalc = nbPointsAutreDimension(d2, pLongCalc);
+        pLargCalc = d2 / (nLargCalc - 1);
+      } else {
+        // d2 = grande dimension
+        nLargCalc = nbPointsGrandeDimension(d2, p);
+        pLargCalc = d2 / (nLargCalc - 1);
+
+        nLongCalc = nbPointsAutreDimension(d1, pLargCalc);
+        pLongCalc = d1 / (nLongCalc - 1);
+      }
+
+      const totalCalc = nLongCalc * nLargCalc;
+
+      // Grille de mesure
+      const nLongMes = nbPointsMesure(nLongCalc);
+      const nLargMes = nbPointsMesure(nLargCalc);
+      const pLongMes = d1 / (nLongMes - 1);
+      const pLargMes = d2 / (nLargMes - 1);
+      const totalMes = nLongMes * nLargMes;
+
+      let message = "";
+
+      message += "<div class='bloc calc'>";
+      message += "<div class='titre-bloc'>Grille de calcul (référence)</div>";
+      message += "Rapport d1/d2 = " + formaterNombre(d1/d2) + "<br>";
+      message += "d utilisé pour p<sub>max</sub> = " + formaterNombre(d) + " m<br>";
+      message += "p<sub>max</sub> (norme) = " + formaterNombre(pMax) + " m<br>";
+      message += "p de dimensionnement = " + formaterNombre(p) + " m<br><br>";
+      message += "Pas réel longueur = " + formaterNombre(pLongCalc) + " m<br>";
+      message += "Pas réel largeur = " + formaterNombre(pLargCalc) + " m<br><br>";
+      message += "Nombre de points longueur = " + nLongCalc + "<br>";
+      message += "Nombre de points largeur = " + nLargCalc + "<br>";
+      message += "<strong>Total points (grille de calcul) : " + totalCalc + "</strong>";
+      message += "</div>";
+
+      message += "<div class='bloc mesure'>";
+      message += "<div class='titre-bloc'>Grille de mesure</div>";
+      message += "Pas longueur (mesure) ≈ " + formaterNombre(pLongMes) + " m<br>";
+      message += "Pas largeur (mesure) ≈ " + formaterNombre(pLargMes) + " m<br><br>";
+      message += "Nombre de points longueur (mesure) = " + nLongMes + "<br>";
+      message += "Nombre de points largeur (mesure) = " + nLargMes + "<br>";
+      message += "<strong>Total points (grille de mesure) : " + totalMes + "</strong>";
+      message += "</div>";
+
+      if (rapport < 0.5 || rapport > 2){
+        message += "<br>Attention : le rapport longueur/largeur est hors de la plage 0,5 – 2 recommandée pour un maillage régulier.";
+      }
+
+      zoneResultat.innerHTML = message;
+
+      // Dessin de la grille
+      dessinerGrille(nLongCalc, nLargCalc, nLongMes, nLargMes, d1, d2);
+    }
+
+    function dessinerGrille(nLongCalc, nLargCalc, nLongMes, nLargMes, d1, d2){
+      const canvas = document.getElementById("gridCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Efface le canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (nLongCalc < 2 || nLargCalc < 2){
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "14px Arial";
+        ctx.fillText("Saisir des dimensions et lancer le calcul pour voir le maillage.", 20, 30);
+        return;
+      }
+
+      const margin = 30;
+      const width = canvas.width - 2 * margin;
+      const height = canvas.height - 2 * margin;
+
+      // On respecte à peu près le ratio d1/d2
+      const ratioTerrain = d1 / d2;
+      const ratioCanvas = width / height;
+
+      let terrainWidth, terrainHeight;
+      if (ratioTerrain > ratioCanvas){
+        terrainWidth = width;
+        terrainHeight = width / ratioTerrain;
+      } else {
+        terrainHeight = height;
+        terrainWidth = height * ratioTerrain;
+      }
+
+      const offsetX = (canvas.width - terrainWidth) / 2;
+      const offsetY = (canvas.height - terrainHeight) / 2;
+
+      const stepX = terrainWidth / (nLongCalc - 1);
+      const stepY = terrainHeight / (nLargCalc - 1);
+
+      // Indices des points de mesure (distribués sur la grille de calcul)
+      const idxLongMes = [];
+      const idxLargMes = [];
+      if (nLongMes >= 2){
+        const stepIdxLong = (nLongCalc - 1) / (nLongMes - 1);
+        for (let k = 0; k < nLongMes; k++){
+          idxLongMes.push(Math.round(k * stepIdxLong));
+        }
+      }
+      if (nLargMes >= 2){
+        const stepIdxLarg = (nLargCalc - 1) / (nLargMes - 1);
+        for (let k = 0; k < nLargMes; k++){
+          idxLargMes.push(Math.round(k * stepIdxLarg));
+        }
+      }
+
+      // Fond du terrain
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(offsetX, offsetY, terrainWidth, terrainHeight);
+
+      // Grille (lignes)
+      ctx.strokeStyle = "#4b5563";
+      ctx.lineWidth = 1;
+
+      // Lignes verticales
+      for (let i = 0; i < nLongCalc; i++){
+        const x = offsetX + i * stepX;
+        ctx.beginPath();
+        ctx.moveTo(x, offsetY);
+        ctx.lineTo(x, offsetY + terrainHeight);
+        ctx.stroke();
+      }
+
+      // Lignes horizontales
+      for (let j = 0; j < nLargCalc; j++){
+        const y = offsetY + j * stepY;
+        ctx.beginPath();
+        ctx.moveTo(offsetX, y);
+        ctx.lineTo(offsetX + terrainWidth, y);
+        ctx.stroke();
+      }
+
+      // Points de calcul (verts)
+      ctx.fillStyle = "#22c55e";
+      for (let i = 0; i < nLongCalc; i++){
+        for (let j = 0; j < nLargCalc; j++){
+          const x = offsetX + i * stepX;
+          const y = offsetY + j * stepY;
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Points de mesure (orange, plus gros)
+      ctx.fillStyle = "#f97316";
+      for (let ii = 0; ii < idxLongMes.length; ii++){
+        for (let jj = 0; jj < idxLargMes.length; jj++){
+          const i = idxLongMes[ii];
+          const j = idxLargMes[jj];
+          const x = offsetX + i * stepX;
+          const y = offsetY + j * stepY;
+          ctx.beginPath();
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    // Dessin initial (message)
+    dessinerGrille(0,0,0,0,0,0);
+  </script>
+</body>
+</html>
