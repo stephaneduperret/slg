@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
         <a href="https://stephaneduperret.github.io/slg/calculdistancedefreinage.html">Calcul distance de freinage</a>
         <a href="https://stephaneduperret.github.io/slg/tableaudesluminosites.html">Tableau des luminosités</a>
         <a href="https://stephaneduperret.github.io/slg/Maillagesterrains.html">Maillage d'éclairement d'un terrain de sport</a>
+        <a href="https://stephaneduperret.github.io/slg/pointsmesureroutier.html">pointsmesureroutier</a>
+      
         <a href="https://stephaneduperret.github.io/slg/7points.html">Plan en 7 points</a>
 
         
@@ -31,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     links.classList.toggle("show")
   })
 })
+
 
 
 
