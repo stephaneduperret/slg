@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcul des points d'éclairement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            line-height: 1.5;
+        }
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .bloc {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+        }
+        label {
+            display: block;
+            margin: 6px 0 2px;
+        }
+        input[type="number"] {
+            width: 120px;
+            padding: 4px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+        .resultats p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Calcul des points d'éclairement pour une voie</h1>
+
+<div class="bloc">
+    <h2>Données d'entrée</h2>
+    <label for="S">Longueur de la route S (m)</label>
+    <input type="number" id="S" min="0" step="0.01">
+
+    <label for="L">Largeur de la voie l (m)</label>
+    <input type="number" id="L" min="0" step="0.01">
+
+    <button type="button" onclick="calculer()">Calculer</button>
+</div>
+
+<div class="bloc resultats">
+    <h2>Résultats</h2>
+
+    <h3>Dans le sens de la route (longitudinal)</h3>
+    <p id="regleLong"></p>
+    <p id="pointsLong"></p>
+    <p id="espacementD"></p>
+    <p id="bordsD"></p>
+
+    <h3>En travers de la voie (transversal)</h3>
+    <p id="lignes"></p>
+    <p id="espacementd"></p>
+    <p id="bordsd"></p>
+
+    <h3>Total</h3>
+    <p id="totalPoints"></p>
+</div>
+
+<script>
+function arrondir(valeur, decimales) {
+    const facteur = Math.pow(10, decimales);
+    return Math.round(valeur * facteur) / facteur;
+}
+
+function calculer() {
+    const S = parseFloat(document.getElementById('S').value);
+    const L = parseFloat(document.getElementById('L').value);
+
+    if (isNaN(S) || S <= 0 || isNaN(L) || L <= 0) {
+        alert("Merci d'entrer des valeurs de S et l strictement positives.");
+        return;
+    }
+
+    // 1) Sens longitudinal (S)
+    let nPointsLong;
+    let D;
+    let texteRegle;
+
+    if (S <= 30) {
+        // S < 30 m → 10 points
+        nPointsLong = 10;
+        const nIntervalles = nPointsLong - 1;
+        D = S / nIntervalles;
+        texteRegle = "S ≤ 30 m → grille avec 10 points de mesure sur la ligne.";
+    } else {
+        // S > 30 m → N = S / 3
+        let nIntervalles = Math.ceil(S / 3);
+        nPointsLong = nIntervalles + 1;
+        D = S / nIntervalles;
+        texteRegle = "S > 30 m → nombre de points = longueur / 3.";
+    }
+
+    const Dbord = D / 2;
+
+    // 2) Sens transversal (largeur)
+    let nLignes = 3;
+    let d = L / nLignes;
+
+    if (d > 1.5) {
+        nLignes = 4;
+        d = L / nLignes;
+    }
+
+    const dbord = d / 2;
+
+    // 3) Total
+    const total = nPointsLong * nLignes;
+
+    // 4) Affichage
+    document.getElementById('regleLong').textContent = texteRegle;
+    document.getElementById('pointsLong').textContent =
+        "Nombre de points longitudinaux : " + nPointsLong;
+    document.getElementById('espacementD').textContent =
+        "Espacement longitudinal D : " + arrondir(D, 2) + " m";
+    document.getElementById('bordsD').textContent =
+        "Distance au bord (D/2) : " + arrondir(Dbord, 2) + " m";
+
+    document.getElementById('lignes').textContent =
+        "Nombre de lignes transversales : " + nLignes;
+    document.getElementById('espacementd').textContent =
+        "Espacement transversal d : " + arrondir(d, 2) + " m";
+    document.getElementById('bordsd').textContent =
+        "Distance au bord (d/2) : " + arrondir(dbord, 2) + " m";
+
+    document.getElementById('totalPoints').textContent =
+        "Nombre total de points d'éclairement : " + total;
+}
+</script>
+
+</body>
+</html>
