@@ -1,5 +1,3 @@
-// menu.js
-
 document.addEventListener("DOMContentLoaded", function () {
   const menu = document.createElement("div")
   menu.innerHTML = `
@@ -15,10 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <a href="https://stephaneduperret.github.io/slg/tableaudesluminosites.html">Tableau des luminosités</a>
         <a href="https://stephaneduperret.github.io/slg/Maillagesterrains.html">Maillage d'éclairement d'un terrain de sport</a>
         <a href="https://stephaneduperret.github.io/slg/pointsmesureroutier.html">pointsmesureroutier</a>
-      
         <a href="https://stephaneduperret.github.io/slg/7points.html">Plan en 7 points</a>
-
-        
       </div>
     </nav>
   `
@@ -26,18 +21,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.style.paddingTop = "70px"
 
-  // Fonction du menu burger
   const toggle = menu.querySelector(".menu-toggle")
   const links = menu.querySelector(".menu-links")
+
+  // Ouverture / fermeture du menu
   toggle.addEventListener("click", () => {
     links.classList.toggle("show")
   })
+
+  // Fermeture du menu après sélection d’un lien (mobile)
+  const allLinks = links.querySelectorAll("a")
+  allLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      links.classList.remove("show")
+    })
+  })
 })
-
-
-
-
-
-
-
-
