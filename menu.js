@@ -19,14 +19,44 @@ document.addEventListener("DOMContentLoaded", function () {
   `
   document.body.prepend(menu)
 
+  // Décale le contenu pour ne pas passer sous le menu fixe
   document.body.style.paddingTop = "70px"
 
   const toggle = menu.querySelector(".menu-toggle")
   const links = menu.querySelector(".menu-links")
+  const topMenu = menu.querySelector(".top-menu")
+
+  function applyMobileMenuSizing() {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches
+
+    if (isMobile) {
+      const topHeight = topMenu.offsetHeight || 70
+      const maxHeight = window.innerHeight - topHeight
+
+      // Forcer le menu en mode colonne scrollable
+      links.style.flexDirection = "column"
+      links.style.maxHeight = maxHeight + "px"
+      links.style.overflowY = "auto"
+
+      // Si tu n'as pas de CSS pour .show, on sécurise:
+      if (links.classList.contains("show")) {
+        links.style.display = "flex"
+      } else {
+        links.style.display = "none"
+      }
+    } else {
+      // Desktop : on laisse le CSS gérer
+      links.style.display = ""
+      links.style.flexDirection = ""
+      links.style.maxHeight = ""
+      links.style.overflowY = ""
+    }
+  }
 
   // Ouverture / fermeture du menu
   toggle.addEventListener("click", () => {
     links.classList.toggle("show")
+    applyMobileMenuSizing()
   })
 
   // Fermeture du menu après sélection d’un lien (mobile)
@@ -34,6 +64,13 @@ document.addEventListener("DOMContentLoaded", function () {
   allLinks.forEach(link => {
     link.addEventListener("click", () => {
       links.classList.remove("show")
+      applyMobileMenuSizing()
     })
   })
+
+  // Ajuste en cas de rotation / resize
+  window.addEventListener("resize", applyMobileMenuSizing)
+
+  // Premier passage pour mettre de bons styles selon la taille d'écran
+  applyMobileMenuSizing()
 })
