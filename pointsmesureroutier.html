@@ -2,73 +2,76 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Calcul des points d'éclairement</title>
+    <title>Simulation interactive des points d'éclairement</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 20px auto;
             line-height: 1.5;
         }
-        h1 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-        }
+        h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
         .bloc {
             border: 1px solid #ccc;
             padding: 15px;
             margin-top: 15px;
             border-radius: 6px;
         }
-        label {
-            display: block;
-            margin: 6px 0 2px;
-        }
-        input[type="number"] {
-            width: 120px;
-            padding: 4px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 8px 14px;
-            cursor: pointer;
-        }
-        .resultats p {
-            margin: 4px 0;
-        }
+        label { display: block; margin: 6px 0 2px; }
+        input[type="number"] { width: 120px; padding: 4px; }
+        button { margin-top: 10px; padding: 8px 14px; cursor: pointer; }
+        .schema { border: 1px solid #ccc; margin-top: 15px; padding: 10px; }
+        svg text { font-size: 11px; }
     </style>
 </head>
 <body>
 
-<h1>Calcul des points d'éclairement pour une voie</h1>
+<h1>Simulation interactive des voies et points de mesures</h1>
 
 <div class="bloc">
     <h2>Données d'entrée</h2>
-    <label for="S">Longueur de la route S (m)</label>
-    <input type="number" id="S" min="0" step="0.01">
 
-    <label for="L">Largeur de la voie l (m)</label>
-    <input type="number" id="L" min="0" step="0.01">
+    <label for="e">Écartement entre luminaires e (m)</label>
+    <input type="number" id="e" min="0" step="0.01" value="25">
 
-    <button type="button" onclick="calculer()">Calculer</button>
+    <label for="L">Largeur d'une voie l (m)</label>
+    <input type="number" id="L" min="0" step="0.01" value="3.5">
+
+    <label for="nbVoies">Nombre de voies</label>
+    <input type="number" id="nbVoies" min="1" step="1" value="2">
+
+    <button type="button" onclick="calculer()">Calculer et afficher</button>
 </div>
 
-<div class="bloc resultats">
-    <h2>Résultats</h2>
+<!-- 🔵 IMAGE INTERACTIVE EN PREMIER -->
+<div class="bloc schema">
+    <h2>Image interactive des voies et points de mesures</h2>
+    <p>Les rectangles représentent les voies. Les cercles représentent les points de mesures.</p>
+    <svg id="schemaSvg" width="960" height="400"></svg>
+</div>
 
-    <h3>Dans le sens de la route (longitudinal)</h3>
+<!-- 🔵 RÉSULTATS NUMÉRIQUES APRÈS L’IMAGE -->
+<div class="bloc resultats">
+    <h2>Résultats numériques</h2>
+
+    <h3>Longitudinal (entre deux luminaires)</h3>
     <p id="regleLong"></p>
     <p id="pointsLong"></p>
     <p id="espacementD"></p>
     <p id="bordsD"></p>
 
-    <h3>En travers de la voie (transversal)</h3>
-    <p id="lignes"></p>
+    <h3>Transversal (par voie)</h3>
+    <p id="lignesVoie"></p>
     <p id="espacementd"></p>
     <p id="bordsd"></p>
 
-    <h3>Total</h3>
-    <p id="totalPoints"></p>
+    <h3>Multiples voies</h3>
+    <p id="nbVoiesTexte"></p>
+    <p id="lignesTotal"></p>
+
+    <h3>Totaux</h3>
+    <p id="totalParVoie"></p>
+    <p id="totalToutesVoies"></p>
 </div>
 
 <script>
@@ -78,68 +81,158 @@ function arrondir(valeur, decimales) {
 }
 
 function calculer() {
-    const S = parseFloat(document.getElementById('S').value);
+    const e = parseFloat(document.getElementById('e').value);
     const L = parseFloat(document.getElementById('L').value);
+    const nbVoies = parseInt(document.getElementById('nbVoies').value, 10);
 
-    if (isNaN(S) || S <= 0 || isNaN(L) || L <= 0) {
-        alert("Merci d'entrer des valeurs de S et l strictement positives.");
+    if (isNaN(e) || e <= 0 || isNaN(L) || L <= 0 || isNaN(nbVoies) || nbVoies <= 0) {
+        alert("Merci d'entrer des valeurs strictement positives pour e, l et le nombre de voies.");
         return;
     }
 
-    // 1) Sens longitudinal (S)
+    // ----- CALCUL LONGITUDINAL -----
     let nPointsLong;
     let D;
     let texteRegle;
 
-    if (S <= 30) {
-        // S < 30 m → 10 points
+    if (e <= 30) {
         nPointsLong = 10;
-        const nIntervalles = nPointsLong - 1;
-        D = S / nIntervalles;
-        texteRegle = "S ≤ 30 m → grille avec 10 points de mesure sur la ligne.";
+        D = e / (nPointsLong - 1);
+        texteRegle = "e ≤ 30 m → grille avec 10 points de mesure.";
     } else {
-        // S > 30 m → N = S / 3
-        let nIntervalles = Math.ceil(S / 3);
+        let nIntervalles = Math.ceil(e / 3);
         nPointsLong = nIntervalles + 1;
-        D = S / nIntervalles;
-        texteRegle = "S > 30 m → nombre de points = longueur / 3.";
+        D = e / nIntervalles;
+        texteRegle = "e > 30 m → nombre de points = écartement / 3.";
     }
 
     const Dbord = D / 2;
 
-    // 2) Sens transversal (largeur)
-    let nLignes = 3;
-    let d = L / nLignes;
+    // ----- CALCUL TRANSVERSAL -----
+    let nLignesVoie = 3;
+    let d = L / nLignesVoie;
 
     if (d > 1.5) {
-        nLignes = 4;
-        d = L / nLignes;
+        nLignesVoie = 4;
+        d = L / nLignesVoie;
     }
 
     const dbord = d / 2;
 
-    // 3) Total
-    const total = nPointsLong * nLignes;
+    const nLignesTotal = nLignesVoie * nbVoies;
+    const totalParVoie = nPointsLong * nLignesVoie;
+    const totalToutesVoies = nPointsLong * nLignesTotal;
 
-    // 4) Affichage
+    // ----- AFFICHAGE -----
     document.getElementById('regleLong').textContent = texteRegle;
-    document.getElementById('pointsLong').textContent =
-        "Nombre de points longitudinaux : " + nPointsLong;
-    document.getElementById('espacementD').textContent =
-        "Espacement longitudinal D : " + arrondir(D, 2) + " m";
-    document.getElementById('bordsD').textContent =
-        "Distance au bord (D/2) : " + arrondir(Dbord, 2) + " m";
+    document.getElementById('pointsLong').textContent = "Points longitudinaux : " + nPointsLong;
+    document.getElementById('espacementD').textContent = "Espacement longitudinal D : " + arrondir(D,2) + " m";
+    document.getElementById('bordsD').textContent = "Distance au bord (D/2) : " + arrondir(Dbord,2) + " m";
 
-    document.getElementById('lignes').textContent =
-        "Nombre de lignes transversales : " + nLignes;
-    document.getElementById('espacementd').textContent =
-        "Espacement transversal d : " + arrondir(d, 2) + " m";
-    document.getElementById('bordsd').textContent =
-        "Distance au bord (d/2) : " + arrondir(dbord, 2) + " m";
+    document.getElementById('lignesVoie').textContent = "Lignes transversales par voie : " + nLignesVoie;
+    document.getElementById('espacementd').textContent = "Espacement d : " + arrondir(d,2) + " m";
+    document.getElementById('bordsd').textContent = "Distance au bord (d/2) : " + arrondir(dbord,2) + " m";
 
-    document.getElementById('totalPoints').textContent =
-        "Nombre total de points d'éclairement : " + total;
+    document.getElementById('nbVoiesTexte').textContent = "Nombre de voies : " + nbVoies;
+    document.getElementById('lignesTotal').textContent = "Lignes totales : " + nLignesTotal;
+
+    document.getElementById('totalParVoie').textContent = "Total par voie : " + totalParVoie;
+    document.getElementById('totalToutesVoies').textContent = "Total toutes voies : " + totalToutesVoies;
+
+    // ----- DESSIN INTERACTIF -----
+    dessinerSchema(nPointsLong, nLignesVoie, nbVoies);
 }
+
+function dessinerSchema(nPointsLong, nLignesVoie, nbVoies) {
+    const svg = document.getElementById('schemaSvg');
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const width = svg.clientWidth || 960;
+    const laneHeight = 50;
+    const laneSpacing = 20;
+    const marginTop = 40;
+    const marginSide = 60;
+
+    const totalHeight = marginTop + nbVoies * laneHeight + (nbVoies-1)*laneSpacing + 40;
+    svg.setAttribute("height", totalHeight);
+
+    const innerWidth = width - 2 * marginSide;
+    const dx = innerWidth / (nPointsLong - 1);
+
+    // --- Luminaires ---
+    créerCercle(svg, marginSide, 20, 8, "white", "Luminaire 1");
+    créerCercle(svg, marginSide + innerWidth, 20, 8, "white", "Luminaire 2");
+
+    // --- Flèche ---
+    créerLigne(svg, marginSide + 15, 20, marginSide + innerWidth - 15, 20);
+    créerTexte(svg, width/2, 10, "Écartement e");
+
+    // --- Voies + Points ---
+    for (let v = 0; v < nbVoies; v++) {
+        const top = marginTop + v * (laneHeight + laneSpacing);
+
+        créerRect(svg, marginSide, top, innerWidth, laneHeight);
+        créerTexte(svg, width/2, top + laneHeight/2 + 4, "Voie " + (v+1));
+
+        for (let i = 0; i < nPointsLong; i++) {
+            const x = marginSide + i * dx;
+
+            for (let l = 0; l < nLignesVoie; l++) {
+                const y = top + laneHeight * ((l + 0.5) / nLignesVoie);
+
+                const c = créerCercle(svg, x, y, 4, "#0074D9",
+                    `Voie ${v+1} • Ligne ${l+1} • Point ${i+1}`);
+
+                c.addEventListener("click", () => {
+                    c.setAttribute("fill", c.getAttribute("fill") === "#0074D9" ? "#FF4136" : "#0074D9");
+                });
+            }
+        }
+    }
+}
+
+function créerRect(svg, x,y,w,h) {
+    const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    r.setAttribute("x",x); r.setAttribute("y",y);
+    r.setAttribute("width",w); r.setAttribute("height",h);
+    r.setAttribute("fill","white");
+    r.setAttribute("stroke","black");
+    svg.appendChild(r);
+}
+
+function créerCercle(svg, cx,cy,r,fill,title) {
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",cx); c.setAttribute("cy",cy);
+    c.setAttribute("r",r); c.setAttribute("fill",fill);
+    c.setAttribute("stroke","black");
+
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    t.textContent = title;
+    c.appendChild(t);
+
+    svg.appendChild(c);
+    return c;
+}
+
+function créerLigne(svg, x1,y1,x2,y2) {
+    const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+    l.setAttribute("x1",x1); l.setAttribute("y1",y1);
+    l.setAttribute("x2",x2); l.setAttribute("y2",y2);
+    l.setAttribute("stroke","black");
+    svg.appendChild(l);
+}
+
+function créerTexte(svg, x,y,texte) {
+    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",x);
+    t.setAttribute("y",y);
+    t.setAttribute("text-anchor","middle");
+    t.textContent = texte;
+    svg.appendChild(t);
+}
+
+// Affichage initial
+window.addEventListener("load", calculer);
 </script>
 
 </body>
