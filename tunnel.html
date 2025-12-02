@@ -16,17 +16,15 @@
 <!-- Menu JS -->
 <script src="menu.js" defer></script>
 
-
-    
 <style>
   :root{
     --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22d3ee;
-    --z-acces:#fff176;       /* jaune clair */
-    --z-entree:#ffe066;      /* jaune */
-    --z-transition:#ffad61;  /* orange clair */
-    --z-centrale:#ff7043;    /* orange soutenu */
-    --z-sortie:#ff8a65;      /* orange vif */
-    --z-air:#ffcc80;         /* orange clair (air libre) */
+    --z-acces:#fff176;
+    --z-entree:#ffe066;
+    --z-transition:#ffad61;
+    --z-centrale:#ff7043;
+    --z-sortie:#ff8a65;
+    --z-air:#ffcc80;
     --road:#374151; --lane:#9ca3af; --grid:#1f2937;
   }
   *{box-sizing:border-box}
@@ -58,7 +56,18 @@
   .legend{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
   .tag{display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #1f2937; font-size:.9rem}
   .dot{width:14px;height:14px;border-radius:3px}
-  .svgwrap{position:relative; width:100%; min-height:320px; background:#0b1220; border:1px solid #1f2a3a; border-radius:16px; overflow:hidden}
+
+  /* + lisibilité schéma : plus haut + meilleure qualité rendu SVG */
+  .svgwrap{
+    position:relative; width:100%; min-height:380px;
+    background:#0b1220; border:1px solid #1f2a3a; border-radius:16px; overflow:hidden
+  }
+  .svgwrap svg{
+    text-rendering:geometricPrecision;
+    shape-rendering:geometricPrecision;
+    image-rendering:optimizeQuality;
+  }
+
   .hint{font-size:.86rem; color:var(--muted); margin-top:8px}
   .btn{appearance:none;border:1px solid #1f2a3a;background:#0b1220;color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer}
   .btn:hover{border-color:#2b3950}
@@ -81,7 +90,7 @@
           <option value="80">80</option>
           <option value="90">90</option>
           <option value="100">100</option>
-            <option value="120">120</option>
+          <option value="120">120</option>
         </select>
         <div>
           <label for="sa">Distance d'arrêt SA (m)</label>
@@ -143,43 +152,47 @@
     <!-- Schéma -->
     <section class="panel">
       <div class="svgwrap">
-        <svg id="tunnelSVG" viewBox="0 0 1200 360" width="100%" height="360" preserveAspectRatio="none" aria-label="Schéma de tunnel">
-          <!-- fond -->
-          <rect x="0" y="0" width="1200" height="360" fill="#0b1220"/>
-          <!-- bande route -->
-          <rect x="0" y="220" width="1200" height="36" fill="var(--road)"/>
-          <rect x="0" y="256" width="1200" height="12" fill="#111827"/>
+        <!-- preserveAspectRatio "meet" pour éviter l’écrasement -->
+        <svg id="tunnelSVG"
+             viewBox="0 0 1200 380"
+             width="100%" height="380"
+             preserveAspectRatio="xMidYMid meet"
+             aria-label="Schéma de tunnel">
 
-          <!-- zones (largeurs mises à jour en JS) -->
+          <rect x="0" y="0" width="1200" height="380" fill="#0b1220"/>
+          <rect x="0" y="230" width="1200" height="36" fill="var(--road)"/>
+          <rect x="0" y="266" width="1200" height="12" fill="#111827"/>
+
           <g id="zones">
-            <rect id="zAcces"     x="0"   y="80" width="200" height="180" fill="var(--z-acces)"  opacity=".9"/>
-            <rect id="zEntree"    x="200" y="80" width="200" height="180" fill="var(--z-entree)" opacity=".95"/>
-            <rect id="zTrans"     x="400" y="80" width="200" height="180" fill="var(--z-transition)"/>
-            <rect id="zCentrale"  x="600" y="80" width="400" height="180" fill="var(--z-centrale)"/>
-            <rect id="zSortie"    x="1000" y="80" width="120" height="180" fill="var(--z-sortie)"/>
-            <rect id="zAir"       x="1120" y="80" width="80" height="180" fill="var(--z-air)"/>
+            <rect id="zAcces"     x="0"   y="90" width="200" height="180" fill="var(--z-acces)"  opacity=".9"/>
+            <rect id="zEntree"    x="200" y="90" width="200" height="180" fill="var(--z-entree)" opacity=".95"/>
+            <rect id="zTrans"     x="400" y="90" width="200" height="180" fill="var(--z-transition)"/>
+            <rect id="zCentrale"  x="600" y="90" width="400" height="180" fill="var(--z-centrale)"/>
+            <rect id="zSortie"    x="1000" y="90" width="120" height="180" fill="var(--z-sortie)"/>
+            <rect id="zAir"       x="1120" y="90" width="80" height="180" fill="var(--z-air)"/>
           </g>
 
-          <!-- demi-voûte tunnel (effet) -->
-          <path d="M200,140 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
-          <path d="M1000,140 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
+          <path d="M200,150 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
+          <path d="M1000,150 q60,-60 140,0 v120 h-200 v-120 q60,-60 60,0 z" fill="#cbd5e1" opacity=".15"/>
 
-          <!-- échelle / légendes -->
-          <g font-family="Inter, system-ui, Segoe UI" font-size="14" fill="white">
-            <text id="lblAcces"    x="10"   y="76">Zone d’accès</text>
-            <text id="lblEntree"   x="210"  y="76">Zone d’entrée</text>
-            <text id="lblTrans"    x="410"  y="76">Zone de transition</text>
-            <text id="lblCentrale" x="610"  y="76">Zone centrale</text>
-            <text id="lblSortie"   x="1010" y="76">Zone de sortie</text>
-            <text id="lblAir"      x="1130" y="76">Sortie à l’air libre</text>
+          <!-- + lisible : texte plus grand, centré -->
+          <g font-family="Inter, system-ui, Segoe UI"
+             font-size="16"
+             fill="white">
+            <text id="lblAcces"    x="100"  y="86" text-anchor="middle">Zone d’accès</text>
+            <text id="lblEntree"   x="300"  y="86" text-anchor="middle">Zone d’entrée</text>
+            <text id="lblTrans"    x="500"  y="86" text-anchor="middle">Zone de transition</text>
+            <text id="lblCentrale" x="800"  y="86" text-anchor="middle">Zone centrale</text>
+            <text id="lblSortie"   x="1060" y="86" text-anchor="middle">Zone de sortie</text>
+            <text id="lblAir"      x="1160" y="86" text-anchor="middle">Sortie à l’air libre</text>
           </g>
 
-          <!-- courbe verte indicative (variation de luminance) -->
-          <path id="curve" d="M10,120 C160,110 260,115 380,130 S620,160 980,160 1120,150 1180,120"
+          <path id="curve"
+                d="M10,130 C160,120 260,125 380,140 S620,170 980,170 1120,160 1180,130"
                 fill="none" stroke="#22d3ee" stroke-width="6" opacity=".9"/>
 
-          <!-- barre d'échelle m -->
-          <g id="scale" transform="translate(40,330)" font-family="Inter, system-ui, Segoe UI" font-size="12" fill="white">
+          <g id="scale" transform="translate(40,340)"
+             font-family="Inter, system-ui, Segoe UI" font-size="13" fill="white">
             <line x1="0" y1="0" x2="400" y2="0" stroke="#94a3b8" stroke-width="2"/>
             <line x1="0" y1="-6" x2="0" y2="6" stroke="#94a3b8" stroke-width="2"/>
             <line x1="400" y1="-6" x2="400" y2="6" stroke="#94a3b8" stroke-width="2"/>
@@ -210,7 +223,6 @@
     presetNight:document.getElementById('presetNight'),
   };
 
-  // SVG parts
   const svg = {
     zAcces:    document.getElementById('zAcces'),
     zEntree:   document.getElementById('zEntree'),
@@ -228,86 +240,29 @@
     scaleText: document.getElementById('scaleText')
   };
 
-  // Map vitesse -> SA (m) selon repères usuels (approximations)
   const SAref = new Map([[50,45],[60,60],[70,80],[80,95],[90,120],[100,140]]);
   function updateSAfromSpeed(){
     const v = +els.speed.value;
     if(!els.sa.value) els.sa.value = SAref.get(v) || Math.round(v*1.4);
   }
 
-  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-
   function fmt(n, d=1){
     if(!isFinite(n)) return '–';
     return Number(n).toLocaleString('fr-CH',{maximumFractionDigits:d, minimumFractionDigits:d});
   }
 
-  function layout(){
-    const W = 1120; // largeur utile pour les 5 zones internes + air
-    const pxpm = scalePxPerMeter(); // pixels par mètre
-
-    // longueurs en m
-    const SA = Math.max(1, +els.sa.value || 0);
-    const Ltotal = Math.max(10, +els.lenTotal.value || 0);
-    const Laccess = SA;           // avant portail
-    const Lentree = SA;           // dans le tunnel
-    const Ltrans  = Math.max(0, (Number(els.ratioTrans.value)||1)*SA);
-    const Lsortie = Math.max(10, Math.min(0.2*SA, 40));  // petit tronçon interne
-    let Lcentrale = Ltotal - (Lentree + Ltrans + Lsortie);
-    if(Lcentrale < 10){ Lcentrale = 10; } // garde-fou
-
-    // zone à l’air libre = 2*SA (hors tunnel, juste pour visuel)
-    const Lair = 2*SA;
-
-    // conversion en px
-    const wAcces = clamp(Laccess*pxpm, 20, W);
-    const wEntree= clamp(Lentree*pxpm, 20, W);
-    const wTrans = clamp(Ltrans *pxpm,  10, W);
-    const wSortie= clamp(Lsortie*pxpm, 10, W);
-    const wCentr = clamp(Lcentrale*pxpm, 30, W);
-    const wAir   = clamp(Lair*pxpm, 20, 300);
-
-    // placer
-    let x=0;
-    setRect(svg.zAcces, x, wAcces); svg.lblAcces.setAttribute('x', x+10); x+=wAcces;
-    setRect(svg.zEntree,x, wEntree);svg.lblEntree.setAttribute('x',x+10); x+=wEntree;
-    setRect(svg.zTrans, x, wTrans); svg.lblTrans.setAttribute('x', x+10); x+=wTrans;
-    setRect(svg.zCentrale,x, wCentr);svg.lblCentrale.setAttribute('x',x+10); x+=wCentr;
-    setRect(svg.zSortie, x, wSortie);svg.lblSortie.setAttribute('x', x+10); x+=wSortie;
-    setRect(svg.zAir, x, wAir);     svg.lblAir.setAttribute('x', x+10);
-
-    // courbe indicative (simple spline en fonction des largeurs)
-    const y0 = 120, yMin=110, yTrans=160, yC=160, yUp=130;
-    const p = [];
-    const x0 = 10;
-    p.push([x0, y0]);
-    p.push([wAcces*0.6, yMin]);
-    p.push([wAcces + wEntree*0.6, yMin+10]);
-    p.push([wAcces + wEntree + wTrans*0.5, yTrans]);
-    p.push([wAcces + wEntree + wTrans + wCentr*0.7, yC]);
-    p.push([wAcces + wEntree + wTrans + wCentr + wSortie*0.9, yUp]);
-    p.push([wAcces + wEntree + wTrans + wCentr + wSortie + wAir*0.9, y0]);
-    svg.curve.setAttribute('d', catmullRomToBezier(p));
-
-    // échelle visuelle
-    const metersShown = Math.round(400/pxpm);
-    svg.scaleText.textContent = 'Échelle: ' + Math.round(400/pxpm) + ' m';
-  }
-
   function setRect(r, x, w){ r.setAttribute('x', x); r.setAttribute('width', w); }
+
   function scalePxPerMeter(){
-    // On fixe une échelle pour tenir dans ~1000 px de largeur de zones internes.
-    const nominalPx = 900; // cible
-    // estimer longueur totale "dessinée" (sans air libre)
+    const nominalPx = 900;
     const SA = Math.max(1, +els.sa.value || 0);
     const Ltrans = (Number(els.ratioTrans.value)||1)*SA;
     const Lsortie = Math.max(10, Math.min(0.2*SA, 40));
     const L = (+els.lenTotal.value||600);
-    const Ldraw = (SA + SA + Ltrans + L + Lsortie); // approximatif (accès + entrée + trans + centrale incluse dans L)
+    const Ldraw = (SA + SA + Ltrans + L + Lsortie);
     return nominalPx / Ldraw;
   }
 
-  // Catmull-Rom to Bezier path helper
   function catmullRomToBezier(points){
     if(points.length<2) return '';
     const path = ['M', points[0][0], points[0][1]];
@@ -325,56 +280,34 @@
     return path.join(' ');
   }
 
-  function compute(){
-    // Préremplir SA depuis vitesse si vide
-    updateSAfromSpeed();
+  function layout(){
+    const pxpm = scalePxPerMeter();
 
-    const L20 = +els.L20.value || 0;
-    const kpermille = +els.kpermille.value || 0; // ‰
-    const k = kpermille/1000;
-    const q0 = Math.max(0.01, +els.q0.value || 0.07);
-    const LfC = +els.LfC.value || 0;
+    const SA = Math.max(1, +els.sa.value || 0);
+    const Ltotal = Math.max(10, +els.lenTotal.value || 0);
+    const Laccess = SA;
+    const Lentree = SA;
+    const Ltrans  = Math.max(0, (Number(els.ratioTrans.value)||1)*SA);
+    const Lsortie = Math.max(10, Math.min(0.2*SA, 40));
+    let Lcentrale = Ltotal - (Lentree + Ltrans + Lsortie);
+    if(Lcentrale < 10){ Lcentrale = 10; }
+    const Lair = 2*SA;
 
-    const Lfe = (L20 && k) ? (k * L20) : NaN;
-    const Eentree = isFinite(Lfe) ? (Lfe / q0) : NaN;
-    const Ec = (LfC && q0) ? (LfC / q0) : NaN;
+    const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 
-    els.vLfe.textContent = fmt(Lfe,1);
-    els.vEentree.textContent = fmt(Eentree,0);
-    els.vLfC.textContent = fmt(LfC,1);
-    els.vEc.textContent = fmt(Ec,0);
+    const wAcces = clamp(Laccess*pxpm, 40, 1120);
+    const wEntree= clamp(Lentree*pxpm, 40, 1120);
+    const wTrans = clamp(Ltrans *pxpm,  30, 1120);
+    const wSortie= clamp(Lsortie*pxpm, 30, 1120);
+    const wCentr = clamp(Lcentrale*pxpm, 60, 1120);
+    const wAir   = clamp(Lair*pxpm, 40, 300);
 
-    layout();
-  }
+    let x=0;
+    setRect(svg.zAcces, x, wAcces); svg.lblAcces.setAttribute('x', x + wAcces/2); x+=wAcces;
+    setRect(svg.zEntree,x, wEntree);svg.lblEntree.setAttribute('x',x + wEntree/2); x+=wEntree;
+    setRect(svg.zTrans, x, wTrans); svg.lblTrans.setAttribute('x', x + wTrans/2); x+=wTrans;
+    setRect(svg.zCentrale,x, wCentr);svg.lblCentrale.setAttribute('x',x + wCentr/2); x+=wCentr;
+    setRect(svg.zSortie, x, wSortie);svg.lblSortie.setAttribute('x', x + wSortie/2); x+=wSortie;
+    setRect(svg.zAir, x, wAir);     svg.lblAir.setAttribute('x', x + wAir/2);
 
-  // Presets
-  els.presetDay.addEventListener('click', ()=>{
-    if(!els.kpermille.value) els.kpermille.value = 25; // 25 ‰
-    if(!els.LfC.value) els.LfC.value = 3.0;           // exemple
-    if(!els.q0.value) els.q0.value = 0.07;
-    compute();
-  });
-  els.presetNight.addEventListener('click', ()=>{
-    els.kpermille.value = 0; // pas d’adaptation
-    if(!els.LfC.value) els.LfC.value = 1.5;
-    compute();
-  });
-
-  // Listeners
-  ['change','input'].forEach(ev=>{
-    Object.values(els).forEach(e=>{
-      if(e && e.tagName) e.addEventListener(ev, compute);
-    });
-  });
-
-  // init
-  updateSAfromSpeed();
-  compute();
-})();
-</script>
-</body>
-</html>
-
-
-
-
+    const y0 =
