@@ -17,26 +17,22 @@
 <script src="menu.js" defer></script>
   
 <style>
-  :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--radius:18px;--ring:0 0 0 3px rgba(34,211,238,.25)}
-  *{box-sizing:border-box}
-  body{margin:0;padding:24px;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:linear-gradient(180deg,#0b1220,#0b1322 40%,#0a1426)}
-  .wrap{max-width:820px;margin:auto;display:grid;gap:20px}
-  .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  h1{margin:0 0 8px;font-size:26px;letter-spacing:.2px}
+  .wrap{max-width:820px;margin:80px auto 20px;padding:14px}
+  .card{padding:20px}
+  h1{margin:0 0 8px;font-size:1.4rem;letter-spacing:.2px}
   p{margin:0 0 10px;color:var(--muted)}
   label{display:block;margin:10px 0 6px;color:var(--muted)}
-  input[type="number"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#0b1324;color:var(--ink);outline:none}
-  input[type="number"]:focus{box-shadow:var(--ring);border-color:#1f394f}
+  input[type="number"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0b1324;color:var(--text);outline:none}
+  input[type="number"]:focus{box-shadow:0 0 0 3px rgba(98,130,255,.25);border-color:#1f394f}
   .row{display:grid;grid-template-columns:1fr 140px;gap:12px;align-items:center}
   .slider{width:100%}
-  .result{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
-  .pill{background:#0c1930;border:1px solid #1e293b;border-radius:14px;padding:12px}
+  .result{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
   .pill span{display:block;font-size:12px;color:var(--muted)}
-  .pill b{display:block;font-size:20px;margin-top:4px;color:var(--accent)}
-  .big{font-size:48px;line-height:1.05;margin:6px 0;color:#7dd3fc}
-  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b1428;border:1px dashed #1f2a44;padding:10px;border-radius:10px;color:#cbd5e1}
-  .foot{color:#93a3b5;font-size:12px}
-  @media (max-width:720px){.result{grid-template-columns:1fr}.row{grid-template-columns:1fr}.big{font-size:38px}}
+  .pill b{display:block;font-size:20px;margin-top:4px;color:#7cc4ff}
+  .big{font-size:48px;line-height:1.05;margin:6px 0;color:#7cc4ff}
+  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel-2);border:1px dashed var(--line);padding:10px;border-radius:10px;color:var(--text)}
+  .foot{color:var(--muted);font-size:12px}
+  @media (max-width:720px){.row{grid-template-columns:1fr}.big{font-size:38px}}
 </style>
 </head>
 <body>
