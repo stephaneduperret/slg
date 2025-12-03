@@ -4,12 +4,6 @@
   width: 100%;
   position: fixed;
   top: 0;
-  left: 0;/* ===== STYLE GLOBAL DU MENU ===== */
-
-.top-menu {
-  width: 100%;
-  position: fixed;
-  top: 0;
   left: 0;
   z-index: 9999;
 
@@ -27,15 +21,19 @@
   color: #eaf4ff;
 }
 
+/* Logo */
+
 .menu-logo {
   font-size: 20px;
   font-weight: 700;
   color: #7cc4ff;
   text-shadow: 0 0 10px rgba(124, 196, 255, 0.3);
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-/* --- Liens du menu (version bureau) --- */
+/* Liens du menu (bureau) */
+
 .menu-links {
   display: flex;
   align-items: center;
@@ -49,7 +47,8 @@
   font-size: 17px;
   padding: 8px 14px;
   border-radius: 10px;
-  transition: all 0.25s ease;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+  transition: transform .2s ease, background-color .2s ease, color .2s ease;
 }
 
 .menu-links a:hover {
@@ -58,23 +57,30 @@
   transform: translateY(-2px);
 }
 
-/* --- Bouton hamburger (caché sur ordinateur) --- */
+/* Bouton hamburger */
+
 .menu-toggle {
   display: none;
   background: none;
   border: none;
   color: #ffffff;
   font-size: 28px;
+  line-height: 1;
   cursor: pointer;
-  transition: transform 0.3s ease;
 }
 
-.menu-toggle:hover {
-  transform: scale(1.1);
+/* Focus clavier */
+
+.menu-links a:focus-visible,
+.menu-toggle:focus-visible {
+  outline: 2px solid #7cc4ff;
+  outline-offset: 2px;
+  border-radius: 10px;
 }
 
-/* ===== VERSION MOBILE ===== */
-@media (max-width: 768px) {
+/* ===== VERSION MOBILE (classique, plus simple) ===== */
+
+@media (max-width: 900px) {
   .menu-toggle {
     display: block;
   }
@@ -84,20 +90,26 @@
     top: 60px;
     left: 0;
     right: 0;
+
     flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+
     background: rgba(8, 12, 20, 0.98);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    overflow: hidden;
+
     max-height: 0;
     opacity: 0;
-    transition: max-height 0.35s ease, opacity 0.35s ease;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height 0.35s ease, opacity 0.35s ease, padding 0.35s ease;
   }
 
   .menu-links.show {
-    max-height: 300px;
+    max-height: 320px;
     opacity: 1;
-    padding: 10px 0;
+    padding: 8px 0;
   }
 
   .menu-links a {
@@ -110,145 +122,16 @@
   }
 
   .menu-links a:hover {
-    background: rgba(124, 196, 255, 0.15);
     transform: none;
+    background-color: rgba(124, 196, 255, 0.15);
   }
 }
 
 /* Limiter l’étirement sur très grands écrans */
+
 @media (min-width: 1600px) {
   .top-menu {
     padding-left: calc((100vw - 1400px) / 2);
     padding-right: calc((100vw - 1400px) / 2);
   }
 }
-
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-
-  padding: 14px 28px;
-  background: rgba(8, 12, 20, 0.92);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.30);
-
-  font-family: "Inter", system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  color: #ffffff;
-}
-
-.menu-logo {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  color: #eaf4ff;
-  white-space: nowrap;
-}
-
-/* Liens (version ordinateur par défaut) */
-.menu-links {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.menu-links a {
-  text-decoration: none;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 10px;
-
-  /* meilleure lisibilité */
-  text-shadow: 0 1px 1px rgba(0,0,0,0.35);
-  transition: transform .2s ease, background-color .2s ease, color .2s ease;
-}
-
-.menu-links a:hover {
-  background-color: rgba(124, 196, 255, 0.18);
-  color: #bfe4ff;
-  transform: translateY(-2px);
-}
-
-/* Focus clavier accessible */
-.menu-links a:focus-visible,
-.menu-toggle:focus-visible {
-  outline: 2px solid #7cc4ff;
-  outline-offset: 2px;
-  border-radius: 10px;
-}
-
-/* Le bouton hamburger est caché par défaut (ordinateur) */
-.menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 28px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-/* ====== VERSION MOBILE / TABLETTE (seulement appareils tactiles) ======
-   Détection par capacités d'entrée : pointer grossier + pas de hover.
-   Cela évite d'afficher le hamburger sur un navigateur ordinateur,
-   même si la fenêtre est étroite.
-*/
-@media (hover: none) and (pointer: coarse) {
-  .menu-toggle {
-    display: block;
-  }
-
-  .menu-links {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 60px;
-
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-
-    background: rgba(8, 12, 20, 0.98);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    padding: 0;
-    transition: max-height .28s ease, opacity .28s ease, padding .28s ease;
-  }
-
-  .menu-links.show {
-    max-height: 360px;
-    opacity: 1;
-    padding: 8px 0;
-  }
-
-  .menu-links a {
-    display: block;
-    padding: 14px 20px;
-    font-size: 18px;
-    border-radius: 0;
-  }
-
-  .menu-links a:hover {
-    transform: none;
-    background-color: rgba(124, 196, 255, 0.15);
-    color: #d8efff;
-  }
-}
-
-/* Petite optimisation pour très grands écrans : limiter l'étirement */
-@media (min-width: 1400px) {
-  .top-menu {
-    padding-left: max(28px, calc((100vw - 1280px) / 2));
-    padding-right: max(28px, calc((100vw - 1280px) / 2));
-  }
-}
-
