@@ -15,115 +15,117 @@
   <!-- Menu JS -->
   <script src="menu.js" defer></script>
   
-  <style>
-    .card{
-  max-width:1000px;
-  margin:0 auto;
-  background:#111827;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.4);
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-}
+<style>
+  .card{
+    max-width:1000px;
+    margin:0 auto;
+    background:#111827;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+  }
 
-/* Tous les textes en blanc */
-.card, 
-.card *{
-  color:#ffffff !important;
-}
+  /* Tous les textes en blanc uniquement dans la carte */
+  .card,
+  .card *{
+    color:#ffffff !important;
+  }
 
-.left, .right{
-  flex:1 1 320px;
-  min-width:0;
-}
+  .card .left,
+  .card .right{
+    flex:1 1 320px;
+    min-width:0;
+  }
 
-h1{
-  font-size:1.4rem;
-  margin-top:0;
-  text-align:center;
-}
+  .card h1{
+    font-size:1.4rem;
+    margin-top:0;
+    text-align:center;
+  }
 
-label{
-  display:block;
-  margin-top:10px;
-}
+  .card label{
+    display:block;
+    margin-top:10px;
+  }
 
-input{
-  width:100%;
-  padding:8px;
-  margin-top:4px;
-  border-radius:6px;
-  border:1px solid #374151;
-  background:#0b1120;
-  color:#ffffff;
-}
+  .card input{
+    width:100%;
+    padding:8px;
+    margin-top:4px;
+    border-radius:6px;
+    border:1px solid #374151;
+    background:#0b1120;
+    color:#ffffff;
+  }
 
-button{
-  margin-top:15px;
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#22d3ee;
-  color:#0f172a;
-  font-weight:bold;
-  cursor:pointer;
-}
+  .card button{
+    margin-top:15px;
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#22d3ee;
+    color:#0f172a;
+    font-weight:bold;
+    cursor:pointer;
+  }
 
-button:hover{
-  opacity:0.9;
-}
+  .card button:hover{
+    opacity:0.9;
+  }
 
-.result{
-  margin-top:15px;
-  padding:10px;
-  background:#020617;
-  border-radius:8px;
-  font-size:0.95rem;
-  line-height:1.5;
-}
+  .card .result{
+    margin-top:15px;
+    padding:10px;
+    background:#020617;
+    border-radius:8px;
+    font-size:0.95rem;
+    line-height:1.5;
+  }
 
-.bloc{
-  margin-top:10px;
-  padding:8px;
-  border-radius:8px;
-}
+  .card .bloc{
+    margin-top:10px;
+    padding:8px;
+    border-radius:8px;
+  }
 
-.calc{
-  border:1px solid #22c55e;
-}
+  .card .calc{
+    border:1px solid #22c55e;
+  }
 
-.mesure{
-  border:1px solid #f97316;
-  margin-top:12px;
-}
+  .card .mesure{
+    border:1px solid #f97316;
+    margin-top:12px;
+  }
 
-.titre-bloc{
-  font-weight:bold;
-  margin-bottom:4px;
-}
+  .card .titre-bloc{
+    font-weight:bold;
+    margin-bottom:4px;
+  }
 
-.note{
-  font-size:0.85rem;
-  margin-top:10px;
-}
+  .card .note{
+    font-size:0.85rem;
+    margin-top:10px;
+  }
 
-.preview-title{
-  text-align:center;
-  margin-bottom:8px;
-  font-size:0.95rem;
-}
+  .card .preview-title{
+    text-align:center;
+    margin-bottom:8px;
+    font-size:0.95rem;
+  }
 
-canvas{
-  border:1px solid #4b5563;
-  background:#020617;
-  border-radius:8px;
-  width:100%;
-  height:auto;
-}
-  </style>
+  .card canvas{
+    border:1px solid #4b5563;
+    background:#020617;
+    border-radius:8px;
+    width:100%;
+    height:auto;
+  }
+</style>
+
 </head>
 <body>
   <div class="card">
@@ -382,3 +384,4 @@ canvas{
   </script>
 </body>
 </html>
+
