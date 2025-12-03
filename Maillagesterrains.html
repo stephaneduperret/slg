@@ -4,114 +4,125 @@
   <meta charset="UTF-8">
   <title>Maillage terrain de sport – calcul & mesure</title>
 
-<!-- CSS -->
-<link rel="stylesheet" href="style.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
 
-<!-- Manifest + Icone PWA -->
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#000000">
+  <!-- Manifest + Icone PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#000000">
 
-<!-- Menu JS -->
-<script src="menu.js" defer></script>
+  <!-- Menu JS -->
+  <script src="menu.js" defer></script>
   
   <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#0f172a;
-      color:#e5e7eb;
-      margin:0;
-      padding:20px;
-    }
     .card{
-      max-width:1000px;
-      margin:0 auto;
-      background:#111827;
-      padding:20px;
-      border-radius:10px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.4);
-      display:flex;
-      flex-wrap:wrap;
-      gap:20px;
-    }
-    .left, .right{
-      flex:1 1 320px;
-      min-width:0;
-    }
-    h1{
-      font-size:1.4rem;
-      margin-top:0;
-      text-align:center;
-    }
-    label{
-      display:block;
-      margin-top:10px;
-    }
-    input{
-      width:100%;
-      padding:8px;
-      margin-top:4px;
-      border-radius:6px;
-      border:1px solid #374151;
-      background:#0b1120;
-      color:#e5e7eb;
-    }
-    button{
-      margin-top:15px;
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:8px;
-      background:#22d3ee;
-      color:#0f172a;
-      font-weight:bold;
-      cursor:pointer;
-    }
-    button:hover{
-      opacity:0.9;
-    }
-    .result{
-      margin-top:15px;
-      padding:10px;
-      background:#020617;
-      border-radius:8px;
-      font-size:0.95rem;
-      line-height:1.5;
-    }
-    .bloc{
-      margin-top:10px;
-      padding:8px;
-      border-radius:8px;
-    }
-    .calc{
-      border:1px solid #22c55e;
-    }
-    .mesure{
-      border:1px solid #f97316;
-      margin-top:12px;
-    }
-    .titre-bloc{
-      font-weight:bold;
-      margin-bottom:4px;
-    }
-    .note{
-      font-size:0.85rem;
-      margin-top:10px;
-      color:#9ca3af;
-    }
-    .preview-title{
-      text-align:center;
-      margin-bottom:8px;
-      font-size:0.95rem;
-      color:#e5e7eb;
-    }
-    canvas{
-      border:1px solid #4b5563;
-      background:#020617;
-      border-radius:8px;
-      width:100%;
-      height:auto;
-    }
+  max-width:1000px;
+  margin:0 auto;
+  background:#111827;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+/* Tous les textes en blanc */
+.card, 
+.card *{
+  color:#ffffff !important;
+}
+
+.left, .right{
+  flex:1 1 320px;
+  min-width:0;
+}
+
+h1{
+  font-size:1.4rem;
+  margin-top:0;
+  text-align:center;
+}
+
+label{
+  display:block;
+  margin-top:10px;
+}
+
+input{
+  width:100%;
+  padding:8px;
+  margin-top:4px;
+  border-radius:6px;
+  border:1px solid #374151;
+  background:#0b1120;
+  color:#ffffff;
+}
+
+button{
+  margin-top:15px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#22d3ee;
+  color:#0f172a;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+.result{
+  margin-top:15px;
+  padding:10px;
+  background:#020617;
+  border-radius:8px;
+  font-size:0.95rem;
+  line-height:1.5;
+}
+
+.bloc{
+  margin-top:10px;
+  padding:8px;
+  border-radius:8px;
+}
+
+.calc{
+  border:1px solid #22c55e;
+}
+
+.mesure{
+  border:1px solid #f97316;
+  margin-top:12px;
+}
+
+.titre-bloc{
+  font-weight:bold;
+  margin-bottom:4px;
+}
+
+.note{
+  font-size:0.85rem;
+  margin-top:10px;
+}
+
+.preview-title{
+  text-align:center;
+  margin-bottom:8px;
+  font-size:0.95rem;
+}
+
+canvas{
+  border:1px solid #4b5563;
+  background:#020617;
+  border-radius:8px;
+  width:100%;
+  height:auto;
+}
   </style>
 </head>
 <body>
@@ -168,7 +179,7 @@
     function nbPointsGrandeDimension(d, p){
       let n = Math.floor(d / p) + 1;
       if (n < 1) n = 1;
-      if (n % 2 === 0) n += 1; // forcer impair
+      if (n % 2 === 0) n += 1;
       return n;
     }
 
@@ -176,12 +187,11 @@
     function nbPointsAutreDimension(d, pRef){
       let n = Math.round(d / pRef);
       if (n < 1) n = 1;
-      if (n % 2 === 0) n += 1; // forcer impair
+      if (n % 2 === 0) n += 1;
       return n;
     }
 
-    // Grille de mesure : environ moitié des points, toujours impair,
-    // et au moins 3 points par direction.
+    // Grille de mesure
     function nbPointsMesure(nCalc){
       let n = plusProcheImpair(nCalc / 2);
       if (n < 3) n = 3;
@@ -203,7 +213,6 @@
       const dmin = Math.min(d1, d2);
       const rapport = dmax / dmin;
 
-      // d pour la formule pmax
       let d;
       if (rapport < 2){
         d = dmax;
@@ -212,21 +221,18 @@
       }
 
       let pMax = 0.2 * Math.pow(5, log10(d));
-      let p = Math.min(pMax, 10); // limite 10 m
+      let p = Math.min(pMax, 10);
 
-      // Grille de calcul
       let nLongCalc, nLargCalc;
       let pLongCalc, pLargCalc;
 
       if (d1 >= d2){
-        // d1 = grande dimension
         nLongCalc = nbPointsGrandeDimension(d1, p);
         pLongCalc = d1 / (nLongCalc - 1);
 
         nLargCalc = nbPointsAutreDimension(d2, pLongCalc);
         pLargCalc = d2 / (nLargCalc - 1);
       } else {
-        // d2 = grande dimension
         nLargCalc = nbPointsGrandeDimension(d2, p);
         pLargCalc = d2 / (nLargCalc - 1);
 
@@ -236,7 +242,6 @@
 
       const totalCalc = nLongCalc * nLargCalc;
 
-      // Grille de mesure
       const nLongMes = nbPointsMesure(nLongCalc);
       const nLargMes = nbPointsMesure(nLargCalc);
       const pLongMes = d1 / (nLongMes - 1);
@@ -273,7 +278,6 @@
 
       zoneResultat.innerHTML = message;
 
-      // Dessin de la grille
       dessinerGrille(nLongCalc, nLargCalc, nLongMes, nLargMes, d1, d2);
     }
 
@@ -281,7 +285,6 @@
       const canvas = document.getElementById("gridCanvas");
       const ctx = canvas.getContext("2d");
 
-      // Efface le canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (nLongCalc < 2 || nLargCalc < 2){
@@ -295,7 +298,6 @@
       const width = canvas.width - 2 * margin;
       const height = canvas.height - 2 * margin;
 
-      // On respecte à peu près le ratio d1/d2
       const ratioTerrain = d1 / d2;
       const ratioCanvas = width / height;
 
@@ -314,7 +316,6 @@
       const stepX = terrainWidth / (nLongCalc - 1);
       const stepY = terrainHeight / (nLargCalc - 1);
 
-      // Indices des points de mesure (distribués sur la grille de calcul)
       const idxLongMes = [];
       const idxLargMes = [];
       if (nLongMes >= 2){
@@ -330,15 +331,12 @@
         }
       }
 
-      // Fond du terrain
       ctx.fillStyle = "#020617";
       ctx.fillRect(offsetX, offsetY, terrainWidth, terrainHeight);
 
-      // Grille (lignes)
       ctx.strokeStyle = "#4b5563";
       ctx.lineWidth = 1;
 
-      // Lignes verticales
       for (let i = 0; i < nLongCalc; i++){
         const x = offsetX + i * stepX;
         ctx.beginPath();
@@ -347,7 +345,6 @@
         ctx.stroke();
       }
 
-      // Lignes horizontales
       for (let j = 0; j < nLargCalc; j++){
         const y = offsetY + j * stepY;
         ctx.beginPath();
@@ -356,7 +353,6 @@
         ctx.stroke();
       }
 
-      // Points de calcul (verts)
       ctx.fillStyle = "#22c55e";
       for (let i = 0; i < nLongCalc; i++){
         for (let j = 0; j < nLargCalc; j++){
@@ -368,7 +364,6 @@
         }
       }
 
-      // Points de mesure (orange, plus gros)
       ctx.fillStyle = "#f97316";
       for (let ii = 0; ii < idxLongMes.length; ii++){
         for (let jj = 0; jj < idxLargMes.length; jj++){
@@ -383,10 +378,7 @@
       }
     }
 
-    // Dessin initial (message)
     dessinerGrille(0,0,0,0,0,0);
   </script>
 </body>
 </html>
-
-
