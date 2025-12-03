@@ -21,20 +21,10 @@
 <style>
   .card{
     max-width:1000px;
-    margin:0 auto;
-    background:#111827;
+    margin:80px auto 20px;
     padding:20px;
-    border-radius:10px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.4);
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
-  }
-
-  /* Tous les textes en blanc uniquement dans la carte */
-  .card,
-  .card *{
-    color:#ffffff !important;
+    color:var(--text);
+    border:1px solid var(--line);
   }
 
   .card .left,
@@ -56,51 +46,50 @@
 
   .card input{
     width:100%;
-    padding:8px;
+    padding:10px 12px;
     margin-top:4px;
-    border-radius:6px;
-    border:1px solid #374151;
-    background:#0b1120;
-    color:#ffffff;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--panel-2);
+    color:var(--text);
   }
 
   .card button{
     margin-top:15px;
     width:100%;
-    padding:10px;
-    border:none;
-    border-radius:8px;
-    background:#22d3ee;
-    color:#0f172a;
-    font-weight:bold;
+    padding:12px 14px;
+    border:1px solid #264d85;
+    border-radius:12px;
+    background:#1f6feb;
+    color:var(--text);
+    font-weight:700;
     cursor:pointer;
+    box-shadow:var(--shadow);
   }
 
-  .card button:hover{
-    opacity:0.9;
-  }
+  .card button:hover{opacity:0.92;}
 
   .card .result{
     margin-top:15px;
     padding:10px;
-    background:#020617;
-    border-radius:8px;
+    background:var(--panel-2);
+    border-radius:10px;
     font-size:0.95rem;
     line-height:1.5;
   }
 
   .card .bloc{
     margin-top:10px;
-    padding:8px;
-    border-radius:8px;
+    padding:10px;
+    border-radius:10px;
+    background:var(--chip);
+    border:1px dashed var(--line);
   }
 
-  .card .calc{
-    border:1px solid #22c55e;
-  }
+  .card .calc{border-color:#22c55e;}
 
   .card .mesure{
-    border:1px solid #f97316;
+    border-color:#f97316;
     margin-top:12px;
   }
 
@@ -112,6 +101,7 @@
   .card .note{
     font-size:0.85rem;
     margin-top:10px;
+    color:var(--muted);
   }
 
   .card .preview-title{

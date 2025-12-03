@@ -18,7 +18,7 @@
 
 <style>
   :root{
-    --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22d3ee;
+    --accent:#22d3ee;
     --z-acces:#fff176;
     --z-entree:#ffe066;
     --z-transition:#ffad61;
@@ -30,37 +30,37 @@
   *{box-sizing:border-box}
   body{
     margin:0; padding:24px; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;
-    color:var(--ink); background:linear-gradient(180deg,#0b1022,#0a0f20);
+    color:var(--text); background:var(--bg);
   }
   h1{margin:0 0 12px;font-size:clamp(1.2rem,2.5vw,1.8rem);letter-spacing:.2px}
   p.note{color:var(--muted); margin:.25rem 0 .75rem}
   .app{display:grid; grid-template-columns: 380px 1fr; gap:22px}
   @media (max-width: 980px){ .app{grid-template-columns: 1fr; } }
   .panel{
-    background:var(--card); border:1px solid #1f2937; border-radius:16px; padding:16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px;
+    box-shadow: var(--shadow);
   }
   .row{display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap:8px; margin-bottom:10px}
   .row label{font-size:.92rem; color:var(--muted)}
   .row input, .row select{
-    width:100%; padding:10px 12px; border-radius:12px; border:1px solid #273244;
-    background:#0b1220; color:var(--ink);
+    width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--text);
   }
   .grid-2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
   .result{
     display:grid; grid-template-columns: 1.2fr .8fr; gap:8px; margin-top:12px;
-    padding:12px; border-radius:12px; background:#0b1220; border:1px solid #1f2a3a;
+    padding:12px; border-radius:12px; background:var(--panel-2); border:1px solid var(--line);
   }
   .result div{display:flex; align-items:center; justify-content:space-between}
   .result .v{font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--accent)}
   .legend{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-  .tag{display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #1f2937; font-size:.9rem}
+  .tag{display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:var(--panel-2); border:1px solid var(--line); font-size:.9rem}
   .dot{width:14px;height:14px;border-radius:3px}
 
   /* + lisibilité schéma : plus haut + meilleure qualité rendu SVG */
   .svgwrap{
     position:relative; width:100%; min-height:380px;
-    background:#0b1220; border:1px solid #1f2a3a; border-radius:16px; overflow:hidden
+    background:var(--panel-2); border:1px solid var(--line); border-radius:16px; overflow:hidden
   }
   .svgwrap svg{
     text-rendering:geometricPrecision;
@@ -69,7 +69,7 @@
   }
 
   .hint{font-size:.86rem; color:var(--muted); margin-top:8px}
-  .btn{appearance:none;border:1px solid #1f2a3a;background:#0b1220;color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--panel-2);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer}
   .btn:hover{border-color:#2b3950}
   small.units{color:var(--muted)}
 </style>
