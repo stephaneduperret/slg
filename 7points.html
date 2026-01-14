@@ -17,8 +17,7 @@
 <script src="menu.js" defer></script>
 
 <style>
-  .container{max-width:900px;margin:80px auto 20px;padding:14px}
-  h1{margin-top:0;font-size:1.4rem}
+  .container{display:grid;gap:18px}
   .bloc{
     background:var(--panel);
     padding:18px 20px;
@@ -53,8 +52,21 @@
 </head>
 <body>
 
-<div class="container">
-  <h1>Principes de la limitation des émissions lumineuses (plan en 7 points)</h1>
+<div class="wrap">
+  <header class="page-hero">
+    <div>
+      <div class="eyebrow">Plan lumière</div>
+      <h1>Principes de la limitation des émissions lumineuses (plan en 7 points)</h1>
+      <p class="page-subtitle">Un guide synthétique pour concevoir un éclairage responsable tout en garantissant la sécurité.</p>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-card">Rappel rapide des 7 leviers d’optimisation.</div>
+      <div class="meta-card">Supports visuels pour faciliter la sensibilisation.</div>
+      <div class="meta-card">Compatible avec les projets d’aménagement urbain.</div>
+    </div>
+  </header>
+
+  <div class="container">
 
   <!-- 1 -->
   <div class="bloc">
@@ -135,6 +147,7 @@
     </div>
   </div>
 
+</div>
 </div>
 
 </body>

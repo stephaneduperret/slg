@@ -17,11 +17,9 @@
 <script src="menu.js" defer></script>
 
 <style>
-  .wrapper{max-width:960px;margin:80px auto 20px;padding:14px;display:grid;gap:18px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  h1{font-size:clamp(20px,2.8vw,30px);margin:0;font-weight:700}
+  /* Mise en page spécifique aux flux lumineux */
+  .wrapper{display:grid;gap:18px}
   h2{margin:0 0 12px 0;font-size:18px}
-  .subtitle{margin:0;color:var(--muted);font-size:clamp(12px,1.8vw,14px)}
   .card{background:var(--panel);
         border:1px solid var(--line);border-radius:18px;padding:18px;
         box-shadow:var(--shadow)}
@@ -31,13 +29,13 @@
     color:var(--text);background:var(--panel-2);border:1px solid var(--line);
     outline:none;transition:.2s border-color,.2s box-shadow
   }
-  select:focus, input:focus{box-shadow:0 0 0 3px rgba(98,130,255,.25);border-color:#6282ff}
+  select:focus, input:focus{box-shadow:0 0 0 3px var(--ring);border-color:var(--primary)}
   .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .note{font-size:12px;color:var(--muted)}
   .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
-        background:rgba(124,196,255,.12);border:1px solid rgba(124,196,255,.35);
-        color:#dff0ff;font-size:12px;width:max-content}
+        background:rgba(30,34,170,.08);border:1px solid rgba(30,34,170,.2);
+        color:var(--text);font-size:12px;width:max-content}
   .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
   .kv{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;
       padding:12px;text-align:center}
@@ -51,18 +49,23 @@
   .result{display:grid;gap:12px}
   @media (max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
   @media (max-width:560px){
-    .wrapper{padding:16px}
     .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .form-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <header>
+<div class="wrap wrapper">
+  <header class="page-hero">
     <div>
-      <h1>Calculs des Flux</h1>
-      <p class="subtitle">Choisissez une classe, renseignez les paramètres, puis le flux à installer est réutilisé pour tous les calculs.</p>
+      <div class="eyebrow">Flux lumineux</div>
+      <h1>Calculs des flux</h1>
+      <p class="page-subtitle">Choisissez une classe, renseignez les paramètres, puis le flux à installer est réutilisé pour tous les calculs.</p>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-card">Paramètres normalisés et lecture rapide des résultats.</div>
+      <div class="meta-card">Tableau récapitulatif pour comparer les valeurs clés.</div>
+      <div class="meta-card">Saisie optimisée pour les contrôles sur site.</div>
     </div>
   </header>
 

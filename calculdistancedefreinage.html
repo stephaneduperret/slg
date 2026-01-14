@@ -17,19 +17,19 @@
 <script src="menu.js" defer></script>
   
 <style>
-  .wrap{max-width:820px;margin:80px auto 20px;padding:14px}
+  /* Mise en forme du calcul de distance de freinage */
+  .wrap{display:grid;gap:18px}
   .card{padding:20px}
-  h1{margin:0 0 8px;font-size:1.4rem;letter-spacing:.2px}
   p{margin:0 0 10px;color:var(--muted)}
   label{display:block;margin:10px 0 6px;color:var(--muted)}
-  input[type="number"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0b1324;color:var(--text);outline:none}
-  input[type="number"]:focus{box-shadow:0 0 0 3px rgba(98,130,255,.25);border-color:#1f394f}
+  input[type="number"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);outline:none}
+  input[type="number"]:focus{box-shadow:0 0 0 3px var(--ring);border-color:var(--primary)}
   .row{display:grid;grid-template-columns:1fr 140px;gap:12px;align-items:center}
   .slider{width:100%}
   .result{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
   .pill span{display:block;font-size:12px;color:var(--muted)}
-  .pill b{display:block;font-size:20px;margin-top:4px;color:#7cc4ff}
-  .big{font-size:48px;line-height:1.05;margin:6px 0;color:#7cc4ff}
+  .pill b{display:block;font-size:20px;margin-top:4px;color:var(--primary)}
+  .big{font-size:48px;line-height:1.05;margin:6px 0;color:var(--primary)}
   .formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel-2);border:1px dashed var(--line);padding:10px;border-radius:10px;color:var(--text)}
   .foot{color:var(--muted);font-size:12px}
   @media (max-width:720px){.row{grid-template-columns:1fr}.big{font-size:38px}}
@@ -37,8 +37,20 @@
 </head>
 <body>
   <main class="wrap">
+    <header class="page-hero">
+      <div>
+        <div class="eyebrow">Sécurité routière</div>
+        <h1>Calcul de la distance d’arrêt</h1>
+        <p class="page-subtitle">Estimez la distance d’arrêt avec une formule standard en fonction de la vitesse.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-card">Formule intégrée : SD = (v/10)² + 3·(v/10).</div>
+        <div class="meta-card">Synchronisation entre curseur et champ de saisie.</div>
+        <div class="meta-card">Lecture directe des composantes réaction & freinage.</div>
+      </div>
+    </header>
+
     <section class="card">
-      <h1>Calcul de la distance d’arrêt</h1>
       <p>SD = (v/10)<sup>2</sup> + 3·(v/10) &nbsp;&nbsp;|&nbsp;&nbsp; v en km/h, SD en mètres.</p>
 
       <div class="row">

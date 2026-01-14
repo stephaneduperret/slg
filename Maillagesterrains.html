@@ -19,9 +19,9 @@
 
   
 <style>
+  /* Maillage de terrain */
+  .layout{display:grid;gap:18px}
   .card{
-    max-width:1000px;
-    margin:80px auto 20px;
     padding:20px;
     color:var(--text);
     border:1px solid var(--line);
@@ -31,12 +31,6 @@
   .card .right{
     flex:1 1 320px;
     min-width:0;
-  }
-
-  .card h1{
-    font-size:1.4rem;
-    margin-top:0;
-    text-align:center;
   }
 
   .card label{
@@ -58,10 +52,10 @@
     margin-top:15px;
     width:100%;
     padding:12px 14px;
-    border:1px solid #264d85;
+    border:1px solid var(--primary);
     border-radius:12px;
-    background:#1f6feb;
-    color:var(--text);
+    background:var(--primary);
+    color:#ffffff;
     font-weight:700;
     cursor:pointer;
     box-shadow:var(--shadow);
@@ -86,10 +80,10 @@
     border:1px dashed var(--line);
   }
 
-  .card .calc{border-color:#22c55e;}
+  .card .calc{border-color:var(--accent);}
 
   .card .mesure{
-    border-color:#f97316;
+    border-color:#f59e0b;
     margin-top:12px;
   }
 
@@ -111,8 +105,8 @@
   }
 
   .card canvas{
-    border:1px solid #4b5563;
-    background:#020617;
+    border:1px solid var(--line);
+    background:#f8fafc;
     border-radius:8px;
     width:100%;
     height:auto;
@@ -121,7 +115,21 @@
 
 </head>
 <body>
-  <div class="card">
+  <div class="wrap layout">
+    <header class="page-hero">
+      <div>
+        <div class="eyebrow">Sport & éclairage</div>
+        <h1>Maillage d’éclairement d’un terrain de sport</h1>
+        <p class="page-subtitle">Calculez la grille de mesure et visualisez la répartition lumineuse pour préparer vos relevés.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-card">Définition rapide des dimensions et du pas de mesure.</div>
+        <div class="meta-card">Aperçu graphique pour valider les points de contrôle.</div>
+        <div class="meta-card">Format conçu pour les rapports de conformité.</div>
+      </div>
+    </header>
+
+    <div class="card">
     <div class="left">
       <h1>Maillage d'éclairement d'un terrain de sport</h1>
 
@@ -375,6 +383,7 @@
 
     dessinerGrille(0,0,0,0,0,0);
   </script>
+  </div>
 </body>
 </html>
 

@@ -20,20 +20,25 @@
 
   
 <style>
-  :root{--accent:#22d3ee; --road:#4b5563; --kerb:#9ca3af; --grass:#14532d}
+  /* Paramètres visuels spécifiques à la simulation */
+  :root{
+    --accent: var(--primary);
+    --road:#cfd6df;
+    --kerb:#a7b2bf;
+    --grass:#d5efe4;
+    --ink: var(--text);
+  }
   *{box-sizing:border-box}
   body{
     margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
     background:var(--bg);
     color:var(--text); min-height:100vh; display:flex; flex-direction:column; gap:18px;
   }
-  header{padding:18px 22px 0}
-  header h1{margin:0; font-size:clamp(18px,2.5vw,24px); font-weight:650}
-  main{display:grid; grid-template-columns:minmax(280px,420px) 1fr; gap:18px; padding:0 22px 24px 22px}
+  main{display:grid; grid-template-columns:minmax(280px,420px) 1fr; gap:18px; padding:0 0 24px}
   @media(max-width:900px){main{grid-template-columns:1fr}}
   .card{
     background:var(--panel);
-    border:1px solid var(--line); border-radius:16px; padding:18px;
+    border:1px solid var(--line); border-radius:var(--radius-lg); padding:18px;
     box-shadow:var(--shadow);
   }
   label{display:block; font-size:14px; color:var(--muted); margin-bottom:6px}
@@ -51,68 +56,78 @@
     background:var(--panel-2); border:1px dashed var(--line); border-radius:12px; padding:12px
   }
   .box h3{margin:0; font-size:13px; color:var(--muted)}
-  .box p{margin:6px 0 0; font-size:22px; color:#7cc4ff; font-weight:800}
+  .box p{margin:6px 0 0; font-size:22px; color:var(--primary); font-weight:800}
   .scene-wrap{position:relative}
   .legend{
     position:absolute; top:10px; left:10px; font-size:12px; color:var(--muted);
-    background:#0b1224AA; backdrop-filter:blur(2px);
-    border:1px solid #253048; border-radius:10px; padding:8px 10px
+    background:rgba(255,255,255,0.88); backdrop-filter:blur(2px);
+    border:1px solid var(--line); border-radius:10px; padding:8px 10px
   }
   .scene{
     position:relative; width:100%; height:520px; border-radius:16px; overflow:hidden;
-    background:radial-gradient(1200px 420px at 60% 0%,#0f172a 0%,#0b1224 60%,#09111f 100%);
+    background:radial-gradient(1200px 420px at 60% 0%,#f8fafc 0%,#eef2f7 60%,#e2e8f0 100%);
     border:1px solid var(--line);
   }
   .terrain{position:absolute; inset:0; display:grid; grid-template-rows:1fr auto 1fr}
-  .grass{background:repeating-linear-gradient(90deg,#0f2c1c,#0f2c1c 20px,#103422 20px,#103422 40px)}
+  .grass{background:repeating-linear-gradient(90deg,#dff3ea,#dff3ea 20px,#cce9dc 20px,#cce9dc 40px)}
   .road{
-    height:160px; background:linear-gradient(#6b7280,#4b5563 40%,#4b5563 60%,#6b7280);
+    height:160px; background:linear-gradient(#e2e8f0,#cbd5e1 40%,#cbd5e1 60%,#e2e8f0);
     border-top:8px solid var(--kerb); border-bottom:8px solid var(--kerb); position:relative
   }
   .road::before,.road::after{
     content:""; position:absolute; left:0; right:0; top:calc(50% - 2px); height:4px;
-    background:repeating-linear-gradient(90deg,#e5e7eb 0 30px,transparent 30px 60px); opacity:.8
+    background:repeating-linear-gradient(90deg,#f8fafc 0 30px,transparent 30px 60px); opacity:.8
   }
   .lane-dim{
-    position:absolute; right:10px; top:-60px; width:6px; background:#22d3ee; height:0;
+    position:absolute; right:10px; top:-60px; width:6px; background:var(--accent); height:0;
     transform-origin:bottom; border-radius:3px;
   }
   .lane-dim::after{
     content:attr(data-h) " m"; position:absolute; left:10px; top:-16px; font-size:12px; color:var(--ink);
-    background:#0b1224; padding:2px 6px; border:1px solid #253048; border-radius:8px
+    background:#ffffff; padding:2px 6px; border:1px solid var(--line); border-radius:8px
   }
   .lamp{
     position:absolute; bottom:160px; width:50px; transform:translateX(-50%);
     display:flex; flex-direction:column; align-items:center; gap:4px
   }
   .mast{
-    width:8px; height:120px; background:linear-gradient(#0b0f17,#111827);
+    width:8px; height:120px; background:linear-gradient(#4b5563,#1f2937);
     border:1px solid #1f2937; border-radius:4px 4px 2px 2px; position:relative;
   }
   .mast::after{
     content:""; position:absolute; top:-26px; left:50%; transform:translateX(-50%);
     width:26px; height:26px; background:radial-gradient(#fde68a,#fbbf24 60%,#f59e0b);
-    border:2px solid #1f2937; border-radius:6px 6px 18px 18px; box-shadow:0 0 24px 6px #fde68a66
+    border:2px solid #1f2937; border-radius:6px 6px 18px 18px; box-shadow:0 0 20px 6px #fde68a66
   }
   .lamp .h-label{
-    font-size:12px; color:var(--muted); background:#0b1224; border:1px solid #253048;
+    font-size:12px; color:var(--muted); background:#ffffff; border:1px solid var(--line);
     padding:2px 6px; border-radius:8px
   }
   .measure{
-    position:absolute; bottom:200px; left:0; right:0; height:0; border-bottom:2px dashed #22d3ee;
+    position:absolute; bottom:200px; left:0; right:0; height:0; border-bottom:2px dashed var(--accent);
   }
   .measure::after{
     content:attr(data-e) " m"; position:absolute; left:50%; transform:translate(-50%,10px);
-    font-size:12px; color:var(--ink); background:#0b1224;
-    padding:2px 6px; border:1px solid #253048; border-radius:8px
+    font-size:12px; color:var(--ink); background:#ffffff;
+    padding:2px 6px; border:1px solid var(--line); border-radius:8px
   }
-  footer{padding:0 22px 26px; color:var(--muted); font-size:12px}
+  footer{padding:0 0 26px; color:var(--muted); font-size:12px}
 </style>
 </head>
 <body>
-<header>
-  <h1>Calcul de la hauteur d’un mât et de l’espacement entre deux candélabres</h1>
-</header>
+<div class="wrap">
+  <header class="page-hero">
+    <div>
+      <div class="eyebrow">Étude de gabarit</div>
+      <h1>Calcul de la hauteur d’un mât et de l’espacement entre deux candélabres</h1>
+      <p class="page-subtitle">Ajustez la largeur de chaussée pour obtenir la hauteur de mât recommandée (H) et l’espacement (e), avec une visualisation simplifiée.</p>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-card">Formules : H = 0,8 × largeur ; e = 5 × H.</div>
+      <div class="meta-card">Synchronisation instantanée entre curseur et saisie numérique.</div>
+      <div class="meta-card">Schéma visuel pour valider les proportions sur site.</div>
+    </div>
+  </header>
 
 <main>
   <section class="card">
@@ -174,6 +189,7 @@
 <footer>
   Astuce : faites glisser le curseur ou tapez une valeur précise de largeur de route pour voir la hauteur des mâts et l’espacement se mettre à jour, ainsi que la scène.
 </footer>
+</div>
 
 <script>
 (function(){
