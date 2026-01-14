@@ -2,18 +2,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const menu = document.createElement("div")
   menu.innerHTML = `
     <nav class="top-menu">
-      <div class="menu-logo">⚡ SLG Calculs</div>
+      <div class="menu-logo">SLG • Outils d'éclairage</div>
       <button class="menu-toggle" aria-label="Menu">&#9776;</button>
       <div class="menu-links">
+        <!-- Navigation principale -->
         <a href="https://stephaneduperret.github.io/slg/index.html">Classification d'une route</a>
-        <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur mâts et espacement</a>
-        <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs des Flux</a>
-        <a href="https://stephaneduperret.github.io/slg/tunnel.html">Flux dans les tunnels</a>
-        <a href="https://stephaneduperret.github.io/slg/calculdistancedefreinage.html">Calcul distance de freinage</a>
+        <a href="https://stephaneduperret.github.io/slg/slg.html">Hauteur des mâts &amp; espacement</a>
+        <a href="https://stephaneduperret.github.io/slg/calculsdesflux.html">Calculs de flux lumineux</a>
+        <a href="https://stephaneduperret.github.io/slg/tunnel.html">Flux lumineux en tunnel</a>
+        <a href="https://stephaneduperret.github.io/slg/calculdistancedefreinage.html">Distance de freinage</a>
         <a href="https://stephaneduperret.github.io/slg/tableaudesluminosites.html">Tableau des luminosités</a>
-        <a href="https://stephaneduperret.github.io/slg/Maillagesterrains.html">Maillage d'éclairement d'un terrain de sport</a>
-        <a href="https://stephaneduperret.github.io/slg/pointsmesureroutier.html">pointsmesureroutier</a>
-        <a href="https://stephaneduperret.github.io/slg/7points.html">Plan en 7 points</a>
+        <a href="https://stephaneduperret.github.io/slg/Maillagesterrains.html">Maillage terrain de sport</a>
+        <a href="https://stephaneduperret.github.io/slg/pointsmesureroutier.html">Points de mesure routier</a>
+        <a href="https://stephaneduperret.github.io/slg/7points.html">Plan lumière en 7 points</a>
       </div>
     </nav>
   `

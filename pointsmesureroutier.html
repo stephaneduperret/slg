@@ -18,14 +18,12 @@
     <style>
         body {
             font-family: Inter, system-ui, Segoe UI, sans-serif;
-            max-width: 1000px;
-            margin: 80px auto 30px;
             line-height: 1.5;
             background: var(--bg);
             color: var(--text);
-            padding: 0 14px;
+            margin: 0;
         }
-        h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .layout { display: grid; gap: 18px; }
         .bloc {
             border: 1px solid var(--line);
             padding: 15px;
@@ -36,15 +34,26 @@
         }
         label { display: block; margin: 6px 0 2px; color: var(--muted); }
         input[type="number"] { width: 120px; padding: 6px 8px; border:1px solid var(--line); border-radius:10px; background:var(--panel-2); color:var(--text); }
-        button { margin-top: 10px; padding: 10px 14px; cursor: pointer; border-radius:10px; border:1px solid var(--line); background:var(--panel-2); color:var(--text); }
-        button:hover{border-color:#2b3950;}
+        button { margin-top: 10px; padding: 10px 14px; cursor: pointer; border-radius:10px; border:1px solid var(--primary); background:var(--primary); color:#ffffff; }
+        button:hover{opacity:0.92;}
         .schema { border: 1px solid var(--line); margin-top: 15px; padding: 10px; }
         svg text { font-size: 11px; fill: var(--text); }
     </style>
 </head>
 <body>
-
-<h1>Simulation interactive des voies et points de mesures</h1>
+<div class="wrap layout">
+    <header class="page-hero">
+        <div>
+            <div class="eyebrow">Mesures routières</div>
+            <h1>Simulation interactive des voies et points de mesures</h1>
+            <p class="page-subtitle">Définissez l’écartement des luminaires et la largeur des voies pour générer automatiquement les points de mesure.</p>
+        </div>
+        <div class="hero-meta">
+            <div class="meta-card">Schéma interactif et résultats numériques détaillés.</div>
+            <div class="meta-card">Calculs conformes aux pas de mesure usuels.</div>
+            <div class="meta-card">Conçu pour optimiser les relevés sur site.</div>
+        </div>
+    </header>
 
 <div class="bloc">
     <h2>Données d'entrée</h2>
@@ -253,6 +262,7 @@ function créerTexte(svg, x,y,texte) {
 window.addEventListener("load", calculer);
 </script>
 
+</div>
 </body>
 </html>
 
